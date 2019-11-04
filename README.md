@@ -13,10 +13,10 @@ Use at your own risk! Read the script before you run it.
 
 ```bash
 # if root
-wget -qO - https://raw.githubusercontent.com/kosmonavtika/pve-patch/master/patch.sh | bash
+wget -qO - https://github.com/sbennell/pve-patch/master/patch.sh | bash
 
 # if non-root
-wget -qO - https://raw.githubusercontent.com/kosmonavtika/pve-patch/master/patch.sh | sudo bash
+wget -qO - https://github.com/sbennell/pve-patch/master/patch.sh | sudo bash
 ```
 
 ## Restore
