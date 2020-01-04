@@ -11,4 +11,6 @@ wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/kosmona
 chmod -R a+x /usr/share/pve-patch/scripts
 cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
 /usr/share/pve-patch/scripts/apply.sh
+apt update
+apt upgrade -y
 echo "- done!"
