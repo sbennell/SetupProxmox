@@ -25,13 +25,9 @@ $xline
 8888888P"   "Y8888  888  888 888  888  "Y8888  888 888      8888888     888     
                        www.bennellit.com.au
 $xline
-Always Classic Cars 
-SVR-ACC-VH01
-
-Welcome to the Proxmox Virtual Environment. Please use your web browser to 
-configure this server - connect to:
-
-  https://${localip}:8006/
+            Welcome to the Bennell IT  Virtual Environment. 
+    Please use your web browser to configure this server - connect to:
+                            https://${localip}:8006/
 
 $xline
 
