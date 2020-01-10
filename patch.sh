@@ -12,7 +12,9 @@ chmod -R a+x /usr/share/pve-patch/scripts
 cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
 cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 /usr/share/pve-patch/scripts/apply.sh
+echo "- Apt Update and upgrade system..."
 apt update
 apt upgrade -y
+echo "- Install ifupdown2..."
 apt install ifupdown2 -y
 echo "- done!"
