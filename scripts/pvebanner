@@ -23,10 +23,11 @@ $xline
 888    888 88888888 888  888 888  888 88888888 888 888        888       888     
 888   d88P Y8b.     888  888 888  888 Y8b.     888 888        888       888     
 8888888P"   "Y8888  888  888 888  888  "Y8888  888 888      8888888     888     
-                       www.bennellit.com.au
+                              www.bennellit.com.au
 $xline
-            Welcome to the Bennell IT Virtual Environment. 
-    Please use your web browser to configure this server - connect to:
+                 Welcome to the Bennell IT Virtual Environment. 
+       Please use your web browser to configure this server - connect to:
+	   
                             https://${localip}:8006/
 
 $xline
