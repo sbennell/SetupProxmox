@@ -17,13 +17,16 @@ apt update
 apt upgrade -y
 echo "- Install ifupdown2..."
 apt install ifupdown2 -y
+
 echo "- Updating Name..."
 x="Proxmox Virtual Environment"
 y="Bennell IT Virtual Environment"
-sed -i -e "s/$x/$y/g" /usr/share/pve-manager/index.html.tpl
-sed -i -e "s/$x/$y/g" /usr/share/pve-manager/touch/index.html.tpl
-
 w="Proxmox VE"
 e="Bennell IT VE "
+sed -i -e "s/$x/$y/g" /usr/share/pve-manager/index.html.tpl
+sed -i -e "s/$x/$y/g" /usr/share/pve-manager/touch/index.html.tpl
 sed -i -e "s/$w/$e/g" /usr/share/pve-manager/js/pvemanagerlib.js
+
+echo "- Updating logon banner..."
+/usr/bin/pvebanner
 echo "- done!"
