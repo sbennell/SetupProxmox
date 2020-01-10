@@ -1,6 +1,6 @@
 # pve-patch
 
-Removes subscription dialogs, replaces enterprise repository with non-subscription repository and replaces branding. Tested on PVE 6.0-7.
+Removes subscription dialogs, replaces enterprise repository with non-subscription repository and replaces branding. Tested on PVE 6.1-5.
 
 ## Note
 
@@ -37,10 +37,4 @@ cp -f /usr/share/pve-manager/images/logo-128.png~ \
 cp -f /usr/share/pve-manager/images/proxmox_logo.png~ \
 /usr/share/pve-patch/images/proxmox_logo.png && \
 /usr/share/pve-patch/scripts/apply.sh
-```
-
-## Test
-
-```
-vagrant up
 ```
