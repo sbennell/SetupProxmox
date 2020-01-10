@@ -14,3 +14,5 @@ function pve_patch() {
 }
 
 pve_patch
+echo "- Updating logon banner..."
+/usr/bin/pvebanner
