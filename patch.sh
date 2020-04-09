@@ -17,5 +17,6 @@ apt update
 apt upgrade -y
 echo "- Install ifupdown2..."
 apt install ifupdown2 -y
-
+cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
+/usr/share/pve-patch/scripts/apply.sh
 echo "- done!"
