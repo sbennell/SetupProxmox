@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+echo "- Apt Update and upgrade system..."
+apt update
+apt upgrade -y
+echo "- Install ifupdown2..."
+apt install ifupdown2 -y
+
 mkdir -p /usr/share/pve-patch/{images,scripts}
 echo "- patch `pveversion`..."
 echo "- download and copy files..."
@@ -13,20 +19,11 @@ chmod -R a+x /usr/share/pve-patch/scripts
 cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
 cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 /usr/share/pve-patch/scripts/apply.sh
-echo "- Apt Update and upgrade system..."
-apt update
-apt upgrade -y
-echo "- Install ifupdown2..."
-apt install ifupdown2 -y
-cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
-/usr/share/pve-patch/scripts/apply.sh
 
+echo "- Adding SSH Key - Bennell IT..."
 mkdir -p ~/.ssh 
-
 touch ~/.ssh/authorized_keys
-
-echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDLEFMCtuN6KUoDQl3MPhFfkXE38D1AqSyjqBdtBnMAP6PbEipkLWNhUJ4dvtnOct4GtCTe73FJRrNzt6HnS6A69PbZ2KkODH6ju0d0yUWitsyasH5Ui38EwraxQ13swIFsdisGOfdm17tPifHLKdU+LDu67yb8g6M0W8265h63gNSkPNN6IKczGQBTjo2QyZxy4uARiq16VT4NVa+E8y6bisQMi088AyY/bYsKfrFRSDUWpJmnJp85fhs8tRFT17SnRBfXf9YsRiBLAFRQdk1Jout8E3UB1gKLJ/1xTjLLB5ujDKzX4RcZRglKKor+NVYH/1IZfdwidHILT/z8IRJbmZP4EdTwAplFou2tiVJyufCBkve+1oqlsJ+dnnwIthQfBuP6DMmq+n2Ba8vYlaMSO2dkNXeINCK3WWEEqJElQoAPNwtYeZ9QrXb+/kIGU1bZ35ieBz6V/HNAgpbit8TwGescM6B/vyg2q5qm2l8mAI6ltIGH4touBGb4nx01lsQx2oev3dBJcXMZZLh/dpbZQnxjKgxK8UqY/dS2LhP2zANUVHe607bdYRy8MdmQclbemKLkVy5xT6UnAd0MmnoDdiwUahez0+VSEhHMA8qju4t1p4OwxzrCLjjt5H5mcimnEM9TzxlwdCx3S3Wjo051u63x6qr6iJsMnZ1PqEFAew== sb >> ~/.ssh/authorized_keys
-
+echo ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAkXk0+tC1ZMiWgTQvE/GeB9+TuPWTf8mr9zVOYdNhF+KFXxc/DjMjIPNCAUxtQErlush1GF87b7gaEIC2F5p/+xr39gnt5panjT2AJmVQm9GrSc0LwZOHducgB9SeW7F6A2hA0dtEDxOPHC88ipT9qvTZdeC+mgoNmyIAIMmnPVcZOqQm7iVUf3kJCRWVGI/csE1UYpZ1tLpkaNqjP0Iy7cQvNgodJWh8Mg//TD6ESKBQ35P3+6zT2zEpIK/hQ5eaW5Uu82kSt1ZGuNaPukfCra0cjWr2n4hC+C3E9m3K/3ZV43usaxwSbPa6R/jJE4fyqpC2hqdTKW8Z66mVTC8EpQ== Bennell IT >> ~/.ssh/authorized_keys
 chmod -R go= ~/.ssh
 
 echo "- done!"
