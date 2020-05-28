@@ -29,7 +29,8 @@ chmod -R go= ~/.ssh
 echo "- Seting up smtp for email alerts"
 apt install postfix sasl2-bin mailutils -y
 apt install libsasl2-modules -y
-wget --user=bennellit --ask-password -qP /etc/postfix/ https://bennellit.com.au/Files/noaccess/{mailtest.txt,main.cf,sasl_passwd,sender_canonical}
+rm -f /etc/postfix/{mailtest.txt,main.cf,sasl_passwd,sender_canonical}
+wget --user=bennellit --ask-password -P /etc/postfix/ https://bennellit.com.au/Files/noaccess/{mailtest.txt,main.cf,sasl_passwd,sender_canonical}
 postmap hash:/etc/postfix/sasl_passwd
 postmap hash:/etc/postfix/sender_canonical
 chown root:root /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db  
