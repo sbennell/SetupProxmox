@@ -1,0 +1,22 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+myhostname=SVR-1-VH1.lab-network.xyz
+
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+inet_protocols = ipv4
+relayhost = [smtp.office365.com]:587
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+smtp_tls_security_level = may
+sender_canonical_maps = regexp:/etc/postfix/sender_canonical
+smtp_tls_CAfile = /etc/postfix/cacert.pem
+smtp_use_tls = yes

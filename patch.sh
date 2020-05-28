@@ -30,7 +30,9 @@ echo "- Seting up smtp for email alerts"
 apt install postfix sasl2-bin mailutils -y
 apt install libsasl2-modules -y
 rm -f /etc/postfix/{mailtest.txt,main.cf,sasl_passwd,sender_canonical}
-wget --user=bennellit --ask-password -P /etc/postfix/ https://bennellit.com.au/Files/noaccess/{mailtest.txt,main.cf,sasl_passwd,sender_canonical}
+wget -nc -P /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/mailtest.txt
+wget -nc -P /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/main.cf
+wget --user=bennellit --ask-password -P /etc/postfix/ https://bennellit.com.au/Files/noaccess/{sasl_passwd,sender_canonical}
 postmap hash:/etc/postfix/sasl_passwd
 postmap hash:/etc/postfix/sender_canonical
 chown root:root /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db  
@@ -38,6 +40,6 @@ chmod 644 /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
 chown root:root /etc/postfix/sender_canonical /etc/postfix/sender_canonical.db  
 chmod 644 /etc/postfix/sender_canonical /etc/postfix/sender_canonical.db
 service postfix restart
-sendmail -v server@lab-network.xyz
+sendmail -v server@lab-network.xyz < /etc/postfix/mailtest.txt
 
 echo "- done!"
