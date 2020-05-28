@@ -28,7 +28,7 @@ chmod -R go= ~/.ssh
 
 #echo "- Seting up smtp for email alerts"
 
-rm -f /etc/postfix/{mailtest.txt,main.cf,sasl_passwd,sender_canonical}
+rm -f /etc/postfix/{mailtest.txt,sasl_passwd,sender_canonical}
 wget -nc -P /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/mailtest.txt
 #wget -nc -P /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/main.cf
 wget --user=bennellit --ask-password -P /etc/postfix/ https://bennellit.com.au/Files/noaccess/{sasl_passwd,sender_canonical}
