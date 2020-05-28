@@ -27,7 +27,10 @@ echo ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAkXk0+tC1ZMiWgTQvE/GeB9+TuPWTf8mr9zVOYdN
 chmod -R go= ~/.ssh
 
 echo "- Seting up smtp for email alerts"
-
-
+apt install postfix sasl2-bin mailutils -y
+apt install libsasl2-modules -y
+#wget -qP /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/{mailtest.txt,main.cf,sasl_passwd.db,sender_canonical.db}
+service postfix restart
+sendmail -v server@lab-network.xyz
 
 echo "- done!"
