@@ -15,6 +15,7 @@ cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 /usr/share/pve-patch/scripts/apply.sh
 
 echo "- Apt Update and upgrade system..."
+echo ""
 apt update
 apt update && apt dist-upgrade -y
 echo "- Install Packages."
