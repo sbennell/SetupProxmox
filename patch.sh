@@ -28,7 +28,7 @@ chmod -R go= ~/.ssh
 
 echo "- Setting  up smtp for email alerts"
 #remove file if exists
-rm -f /etc/postfix/{main.cf,mailtest.txt,sasl_passwd,sender_canonical}
+rm -f /etc/postfix/{main.cf,emailsetupinfo.txt,sasl_passwd,sender_canonical}
 #Downloading Files
 wget -nc -qP /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/main.cf
 
