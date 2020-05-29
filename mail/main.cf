@@ -1,7 +1,5 @@
 # See /usr/share/postfix/main.cf.dist for a commented, more complete version
 
-myhostname=SVR-1-VH1.lab-network.xyz
-
 smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
 biff = no
 
