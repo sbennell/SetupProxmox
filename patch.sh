@@ -32,11 +32,11 @@ rm -f /etc/postfix/{main.cf,mailtest.txt,sasl_passwd,sender_canonical}
 #Downloading Files
 wget -nc -qP /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/main.cf
 
-echo Enter Office 365 Email Address?
-read; Email
+echo "Enter Office 365 Email Address?"
+read Email
 
-echo Enter Office 365 Email Password?
-read; Password
+echo "Enter Office 365 Email Password?"
+read Password
 
 echo "[smtp.office365.com]:587 $Email:$Password" >> /etc/postfix/sasl_passwd
 echo "/.+/ $Email" >> /etc/postfix/sender_canonical
