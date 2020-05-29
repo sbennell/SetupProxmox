@@ -1,0 +1,48 @@
+## Bugfix: reserve 512MB memory for system
+echo "vm.min_free_kbytes = 524288" >> /etc/sysctl.conf
+sysctl -p
+
+## Increase max user watches
+# BUG FIX : No space left on device
+echo 1048576 > /proc/sys/fs/inotify/max_user_watches
+echo "fs.inotify.max_user_watches=1048576" >> /etc/sysctl.conf
+sysctl -p /etc/sysctl.conf
+
+## Increase max FD limit / ulimit
+cat <<EOF >> /etc/security/limits.conf
+# eXtremeSHOK.com Increase max FD limit / ulimit
+* soft     nproc          256000
+* hard     nproc          256000
+* soft     nofile         256000
+* hard     nofile         256000
+root soft     nproc          256000
+root hard     nproc          256000
+root soft     nofile         256000
+root hard     nofile         256000
+EOF
+
+## Enable TCP BBR congestion control
+cat <<EOF > /etc/sysctl.d/10-kernel-bbr.conf
+# eXtremeSHOK.com
+# TCP BBR congestion control
+net.core.default_qdisc=fq
+net.ipv4.tcp_congestion_control=bbr
+EOF
+
+## Increase kernel max Key limit
+cat <<EOF > /etc/sysctl.d/60-maxkeys.conf
+# eXtremeSHOK.com
+# Increase kernel max Key limit
+kernel.keys.root_maxkeys=1000000
+kernel.keys.maxkeys=1000000
+EOF
+
+## Set systemd ulimits
+echo "DefaultLimitNOFILE=256000" >> /etc/systemd/system.conf
+echo "DefaultLimitNOFILE=256000" >> /etc/systemd/user.conf
+echo 'session required pam_limits.so' | tee -a /etc/pam.d/common-session-noninteractive
+echo 'session required pam_limits.so' | tee -a /etc/pam.d/common-session
+echo 'session required pam_limits.so' | tee -a /etc/pam.d/runuser-l
+
+## Set ulimit for the shell user
+cd ~ && echo "ulimit -n 256000" >> .bashrc ; echo "ulimit -n 256000" >> .profile
