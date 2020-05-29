@@ -18,6 +18,9 @@ wget -qO - https://raw.githubusercontent.com/sbennell/pve-patch/master/patch.sh 
 wget -qO - https://raw.githubusercontent.com/sbennell/pve-patch/master/patch.sh | sudo bash
 ```
 
+wget --user=bennellit --ask-password -qO - https://bennellit.com.au/Files/noaccess/patch.sh |  bash
+```
+
 ## Restore
 
 Enterprise repository
