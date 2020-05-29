@@ -30,6 +30,6 @@ echo "subject:New Server Setup Info $Serverfqdn" >> /etc/postfix/emailsetupinfo.
 echo "Hostname: $Serverfqdn" >> /etc/postfix/emailsetupinfo.txt
 echo "IP Address: $IP" >> /etc/postfix/emailsetupinfo.txt
 
-sendmail -v server@lab-network.xyz < /etc/postfix/mailtest.txt
+sendmail -v server@lab-network.xyz < /etc/postfix/emailsetupinfo.txt
 
 echo "- done!"
