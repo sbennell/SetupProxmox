@@ -12,13 +12,11 @@ Use at your own risk! Read the script before you run it.
 
 ```bash
 # if root
-wget -qO - https://raw.githubusercontent.com/sbennell/pve-patch/master/patch.sh | bash
+wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/patch.sh | bash
+wget https://raw.githubusercontent.com/sbennell/SetupProxmox/master/patch.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
 
 # if non-root
-wget -qO - https://raw.githubusercontent.com/sbennell/pve-patch/master/patch.sh | sudo bash
-```
-
-wget --user=bennellit --ask-password -qO - https://bennellit.com.au/Files/noaccess/patch.sh |  bash
+wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/patch.sh | sudo bash
 ```
 
 ## Restore
