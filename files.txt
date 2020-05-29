@@ -1,4 +1,0 @@
-https://bennellit.com.au/Files/noaccess/mailtest.txt
-https://bennellit.com.au/Files/noaccess/main.cf
-https://bennellit.com.au/Files/noaccess/sasl_passwd
-https://bennellit.com.au/Files/noaccess/sender_canonical
