@@ -16,5 +16,5 @@ smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
 smtp_sasl_security_options = noanonymous
 smtp_tls_security_level = may
 sender_canonical_maps = regexp:/etc/postfix/sender_canonical
-smtp_tls_CAfile = /etc/postfix/cacert.pem
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
 smtp_use_tls = yes
