@@ -44,7 +44,6 @@ echo "/.+/ $Email" >> /etc/postfix/sender_canonical
 
 postmap hash:/etc/postfix/sasl_passwd
 postmap hash:/etc/postfix/sender_canonical
-cp /etc/ssl/certs/thawte_Primary_Root_CA.pem /etc/postfix/cacert.pem
 chown root:root /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db  
 chmod 644 /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db  
 chown root:root /etc/postfix/sender_canonical /etc/postfix/sender_canonical.db  
