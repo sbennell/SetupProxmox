@@ -1,0 +1,9 @@
+changed the default partitions after install so I can use all the space for both proxmox and it's VMS.
+
+delete local-lvm storage in gui
+
+lvremove /dev/pve/data
+
+lvresize -l +100%FREE /dev/pve/root
+
+resize2fs /dev/mapper/pve-root
