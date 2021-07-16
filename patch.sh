@@ -12,6 +12,7 @@ wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennel
 chmod -R a+x /usr/share/pve-patch/scripts
 cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
 cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
+chmod +x /usr/share/pve-patch/scripts/apply.sh
 /usr/share/pve-patch/scripts/apply.sh
 
 curl -s https://api.github.com/repos/Jamesits/pve-fake-subscription/releases/latest \
