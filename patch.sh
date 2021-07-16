@@ -15,7 +15,7 @@ cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 chmod +x /usr/share/pve-patch/scripts/apply.sh
 /usr/share/pve-patch/scripts/apply.sh
 
-curl -s https://api.github.com/repos/Jamesits/pve-fake-subscription/releases/latest \
+curl -s https://api.github.com/repos/sbennell/pve-fake-subscription/releases/latest \
 | grep "browser_download_url.*deb" \
 | cut -d : -f 2,3 \
 | tr -d \" \
