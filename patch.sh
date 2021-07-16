@@ -3,7 +3,7 @@
 mkdir -p /usr/share/pve-patch/{images,scripts}
 echo "- patch `pveversion`..."
 echo "- download and copy files..."
-rm -f /usr/share/pve-patch/scripts/{favicon.ico,logo-128.png,proxmox_logo.png}
+rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
 wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/master/images/favicon.ico
 wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/master/images/logo-128.png
 wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/master/images/proxmox_logo.png
