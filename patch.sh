@@ -21,6 +21,8 @@ curl -s https://api.github.com/repos/Jamesits/pve-fake-subscription/releases/lat
 | wget -qi - 
 dpkg -i pve-fake-subscription_*.deb
 
+echo "127.0.0.1 shop.maurer-it.com" | sudo tee -a /etc/hosts
+
 echo "- Apt Update and upgrade system..."
 echo ""
 apt update
