@@ -14,6 +14,15 @@ cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
 cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 /usr/share/pve-patch/scripts/apply.sh
 
+curl -s https://api.github.com/repos/Jamesits/pve-fake-subscription/releases/latest \
+| grep "browser_download_url.*deb" \
+| cut -d : -f 2,3 \
+| tr -d \" \
+| wget -qi - 
+dpkg -i pve-fake-subscription_*.deb
+
+echo "127.0.0.1 shop.maurer-it.com" | sudo tee -a /etc/hosts
+
 echo "- Apt Update and upgrade system..."
 echo ""
 apt update
