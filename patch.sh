@@ -11,6 +11,7 @@ rm -f /usr/share/pve-patch/scripts/{90pvepatch,apply.sh,pvebanner}
 wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/master/scripts/{90pvepatch,apply.sh,pvebanner}
 chmod -R a+x /usr/share/pve-patch/scripts
 cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
+rm -f /usr/bin/pvebanner
 cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 chmod +x /usr/share/pve-patch/scripts/apply.sh
 /usr/share/pve-patch/scripts/apply.sh
@@ -29,7 +30,7 @@ echo ""
 apt update
 apt update && apt dist-upgrade -y
 echo "- Install Packages."
-apt install ifupdown2 sasl2-bin mailutils libsasl2-modules -y curl
+apt install ifupdown2 sasl2-bin mailutils libsasl2-modules curl -y 
 
 echo "- Adding SSH Key - Bennell IT..."
 mkdir -p ~/.ssh 
