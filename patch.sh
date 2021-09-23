@@ -21,6 +21,7 @@ curl -s https://api.github.com/repos/sbennell/pve-fake-subscription/releases/lat
 | tr -d \" \
 | wget -qi - 
 dpkg -i pve-fake-subscription_*.deb
+rm -f pve-fake-subscription_*.deb
 
 echo "127.0.0.1 shop.maurer-it.com" | sudo tee -a /etc/hosts
 
@@ -69,7 +70,5 @@ echo "Hostname: $Serverfqdn" >> /etc/postfix/emailsetupinfo.txt
 echo "IP Address: $IP" >> /etc/postfix/emailsetupinfo.txt
 
 sendmail -v server@lab-network.xyz < /etc/postfix/emailsetupinfo.txt
-
-echo "- done!"
 
 echo "- done!"
