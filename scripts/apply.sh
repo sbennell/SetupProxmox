@@ -16,12 +16,3 @@ pve_patch
 cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 echo "- Updating logon banner..."
 /usr/bin/pvebanner
-
-#echo "- Updating Name..."
-#x="Proxmox Virtual Environment"
-#y="Bennell IT Virtual Environment"
-#w="Proxmox VE"
-#e="Bennell IT VE "
-#sed -i -e "s/$x/$y/g" /usr/share/pve-manager/index.html.tpl
-#sed -i -e "s/$x/$y/g" /usr/share/pve-manager/touch/index.html.tpl
-#sed -i -e "s/$w/$e/g" /usr/share/pve-manager/js/pvemanagerlib.js
