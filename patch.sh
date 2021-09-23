@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 mkdir -p /usr/share/pve-patch/{images,scripts}
+echo "- Proxmox Setup Script Testing Version`..."
 echo "- patch `pveversion`..."
 echo "- download and copy files..."
 rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
