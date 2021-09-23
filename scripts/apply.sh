@@ -13,6 +13,7 @@ function pve_patch() {
 }
 
 pve_patch
+cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 echo "- Updating logon banner..."
 /usr/bin/pvebanner
 
