@@ -6,7 +6,7 @@ use PVE::Cluster;
 
 my $nodename = PVE::INotify::nodename();
 my $localip = PVE::Cluster::remote_node_ip($nodename, 1);
-
+my $lastupdate = DateTime->now;   
 my $xline = '-' x 78;
 
 my $banner = '';
@@ -29,6 +29,7 @@ $xline
        Please use your web browser to configure this server - connect to:
 	   
                             https://${localip}:8006/
+		      Lastupdate: $lastupdate
 $xline
 
 __EOBANNER
