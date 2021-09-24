@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
+branches=Testing
+
 mkdir -p /usr/share/pve-patch/{images,scripts}
+echo "- Proxmox Setup Script Testing Version..."
 echo "- patch `pveversion`..."
 echo "- download and copy files..."
 rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/master/images/favicon.ico
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/master/images/logo-128.png
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/master/images/proxmox_logo.png
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/favicon.ico
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/logo-128.png
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/proxmox_logo.png
 rm -f /usr/share/pve-patch/scripts/{90pvepatch,apply.sh,pvebanner}
-wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/master/scripts/{90pvepatch,apply.sh,pvebanner}
+wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/{90pvepatch,apply.sh,pvebanner}
 chmod -R a+x /usr/share/pve-patch/scripts
 cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
-cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 chmod +x /usr/share/pve-patch/scripts/apply.sh
 /usr/share/pve-patch/scripts/apply.sh
 
@@ -21,15 +23,16 @@ curl -s https://api.github.com/repos/sbennell/pve-fake-subscription/releases/lat
 | tr -d \" \
 | wget -qi - 
 dpkg -i pve-fake-subscription_*.deb
+rm -f pve-fake-subscription_*.deb
 
-echo "127.0.0.1 shop.maurer-it.com" | sudo tee -a /etc/hosts
+echo "127.0.0.1 shop.maurer-it.com" | tee -a /etc/hosts
 
 echo "- Apt Update and upgrade system..."
 echo ""
 apt update
 apt update && apt dist-upgrade -y
 echo "- Install Packages."
-apt install ifupdown2 sasl2-bin mailutils libsasl2-modules -y curl
+apt install ifupdown2 sasl2-bin mailutils libsasl2-modules curl -y 
 
 echo "- Adding SSH Key - Bennell IT..."
 mkdir -p ~/.ssh 
@@ -69,7 +72,5 @@ echo "Hostname: $Serverfqdn" >> /etc/postfix/emailsetupinfo.txt
 echo "IP Address: $IP" >> /etc/postfix/emailsetupinfo.txt
 
 sendmail -v server@lab-network.xyz < /etc/postfix/emailsetupinfo.txt
-
-echo "- done!"
 
 echo "- done!"

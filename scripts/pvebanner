@@ -3,34 +3,35 @@
 use strict;
 use PVE::INotify;
 use PVE::Cluster;
+use Sys::Hostname;
 
 my $nodename = PVE::INotify::nodename();
 my $localip = PVE::Cluster::remote_node_ip($nodename, 1);
-
-my $xline = '-' x 78;
+#my $lastupdate = `date +%m/%d/%Y" "%l:%M:%S" "%p`;
+my $year = `date +%Y`;
+my $hostname = hostname;
+my $xline = '*' x 78;
 
 my $banner = '';
 
 if ($localip) {
     $banner .= <<__EOBANNER;
-
-$xline
-888888b.                                       888 888     8888888 88888888888 
-888  "88b                                      888 888       888       888     
-888  .88P                                      888 888       888       888     
-8888888K.   .d88b.  88888b.  88888b.   .d88b.  888 888       888       888     
-888  "Y88b d8P  Y8b 888 "88b 888 "88b d8P  Y8b 888 888       888       888     
-888    888 88888888 888  888 888  888 88888888 888 888       888       888     
-888   d88P Y8b.     888  888 888  888 Y8b.     888 888       888       888     
-8888888P"   "Y8888  888  888 888  888  "Y8888  888 888     8888888     888     
-                              www.bennellit.com.au                        2020
-$xline
-                 Welcome to the Bennell IT Virtual Environment. 
-       Please use your web browser to configure this server - connect to:
-	   
-                            https://${localip}:8006/
 $xline
 
+888888b.                                       888 888     8888888 88888888888
+888  "88b                                      888 888       888       888
+888  .88P                                      888 888       888       888
+8888888K.   .d88b.  88888b.  88888b.   .d88b.  888 888       888       888
+888  "Y88b d8P  Y8b 888 "88b 888 "88b d8P  Y8b 888 888       888       888
+888    888 88888888 888  888 888  888 88888888 888 888       888       888
+888   d88P Y8b.     888  888 888  888 Y8b.     888 888       888       888
+8888888P"   "Y8888  888  888 888  888  "Y8888  888 888     8888888     888
+                              www.bennellit.com.au                        $year
+$xline
+                         Welcome to $hostname Server.                         
+             Please use your web browser to configure this server             
+                    connect to https://${localip}:8006/                    
+$xline
 __EOBANNER
 
 }
