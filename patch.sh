@@ -25,7 +25,7 @@ curl -s https://api.github.com/repos/sbennell/pve-fake-subscription/releases/lat
 dpkg -i pve-fake-subscription_*.deb
 rm -f pve-fake-subscription_*.deb
 
-echo "127.0.0.1 shop.maurer-it.com" | sudo tee -a /etc/hosts
+echo "127.0.0.1 shop.maurer-it.com" | tee -a /etc/hosts
 
 echo "- Apt Update and upgrade system..."
 echo ""
