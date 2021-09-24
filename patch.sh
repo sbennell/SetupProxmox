@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-branches=Testing
+branches=master
 
 mkdir -p /usr/share/pve-patch/{images,scripts}
 echo "- Proxmox Setup Script Testing Version..."
