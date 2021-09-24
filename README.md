@@ -1,6 +1,6 @@
 # SetupProxmox
 
-Removes subscription dialogs, replaces enterprise repository with non-subscription repository, replaces branding, Update and upgrade system, Add Benenell IT SSh Key and Configure Postfix to use Office365 SMTP Relay. Tested on PVE 5.0 to 7.0
+Removes subscription dialogs, replaces enterprise repository with non-subscription repository, replaces branding, Update and upgrade system, Add Benenell IT SSh Key and Configure Postfix to use Office365 SMTP Relay. Tested on PVE 5.0 to 7.0-11
 
 
 Use at your own risk! Read the script before you run it. 
