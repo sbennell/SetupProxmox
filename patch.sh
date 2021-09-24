@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
+branches=Testing
+
 mkdir -p /usr/share/pve-patch/{images,scripts}
 echo "- Proxmox Setup Script Testing Version..."
 echo "- patch `pveversion`..."
 echo "- download and copy files..."
 rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/Testing/images/favicon.ico
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/Testing/images/logo-128.png
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/Testing/images/proxmox_logo.png
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/favicon.ico
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/logo-128.png
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/proxmox_logo.png
 rm -f /usr/share/pve-patch/scripts/{90pvepatch,apply.sh,pvebanner}
-wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/Testing/scripts/{90pvepatch,apply.sh,pvebanner}
+wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/{90pvepatch,apply.sh,pvebanner}
 chmod -R a+x /usr/share/pve-patch/scripts
 cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
 chmod +x /usr/share/pve-patch/scripts/apply.sh
