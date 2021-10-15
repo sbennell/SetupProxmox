@@ -29,7 +29,6 @@ echo "127.0.0.1 shop.maurer-it.com" | tee -a /etc/hosts
 
 echo "- Apt Update and upgrade system..."
 echo ""
-apt update
 apt update && apt dist-upgrade -y
 echo "- Install Packages."
 apt install ifupdown2 sasl2-bin mailutils libsasl2-modules curl -y 
