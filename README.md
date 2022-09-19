@@ -12,10 +12,10 @@ Use at your own risk! Read the script before you run it.
 
 ```bash
 # if root
-wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/patch.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
+wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
 
 # if non-root
-wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/patch.sh -c -O patch.sh && sudo bash patch.sh  && rm patch.sh
+wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && sudo bash patch.sh  && rm patch.sh
 
 ```
 
