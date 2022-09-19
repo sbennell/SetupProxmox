@@ -13,7 +13,6 @@ HOLD="-"
 CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 branches=master
-my $year = `date +%Y`
 
 clear
 echo -e "${BL}This script will Perform Post Install Routines.${CL}"
@@ -42,7 +41,7 @@ echo -e "${RD}
 888    888 88888888 888  888 888  888 88888888 888 888       888       888
 888   d88P Y8b.     888  888 888  888 Y8b.     888 888       888       888
 8888888P"   "Y8888  888  888 888  888  "Y8888  888 888     8888888     888
-                              www.bennellit.com.au                        $year
+                              www.bennellit.com.au                        
                           Proxmox Post Install Script
 ${CL}"
 }
