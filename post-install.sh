@@ -43,6 +43,7 @@ echo -e "${RD}
 888   d88P Y8b.     888  888 888  888 Y8b.     888 888       888       888
 8888888P"   "Y8888  888  888 888  888  "Y8888  888 888     8888888     888
                               www.bennellit.com.au                        $year
+                          Proxmox Post Install Script
 ${CL}"
 }
 
@@ -56,6 +57,20 @@ function msg_ok() {
     echo -e "${BFR} ${CM} ${GN}${msg}${CL}"
 }
 clear
+
+mkdir -p /usr/share/pve-patch/{images,scripts}
+rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
+rm -f /usr/share/pve-patch/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner}
+
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/favicon.ico
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/logo-128.png
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/proxmox_logo.png
+wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner}
+chmod -R a+x /usr/share/pve-patch/scripts
+cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
+chmod +x /usr/share/pve-patch/scripts/apply.sh
+/usr/share/pve-patch/scripts/apply.sh
+
 
 header_info
 read -r -p "Disable Enterprise Repository? <y/N> " prompt
@@ -99,21 +114,33 @@ sleep 2
 msg_ok "Enabled Dark Mode"
 fi
 
+read -r -p "Enable No-Subscription Repository? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Enabling No-Subscription Repository"
+cat <<EOF >> /etc/apt/sources.list
+deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
+EOF
+sleep 2
+msg_ok "Enabled No-Subscription Repository"
+fi
 
-mkdir -p /usr/share/pve-patch/{images,scripts}
-echo "- Proxmox Setup Script $branches Version..."
-echo "- patch `pveversion`..."
-echo "- download and copy files..."
-rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/favicon.ico
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/logo-128.png
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/proxmox_logo.png
-rm -f /usr/share/pve-patch/scripts/{90pvepatch,apply.sh,pvebanner}
-wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner}
-chmod -R a+x /usr/share/pve-patch/scripts
-cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
-chmod +x /usr/share/pve-patch/scripts/apply.sh
-/usr/share/pve-patch/scripts/apply.sh
+read -r -p "Add (Disabled) Beta/Test Repository? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Adding Beta/Test Repository and set disabled"
+cat <<EOF >> /etc/apt/sources.list
+# deb http://download.proxmox.com/debian/pve bullseye pvetest
+EOF
+sleep 2
+msg_ok "Added Beta/Test Repository"
+fi
+
+
+
+
+
+
 
 
 echo "- Apt Update and upgrade system..."
