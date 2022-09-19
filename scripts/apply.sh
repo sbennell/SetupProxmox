@@ -16,3 +16,5 @@ pve_patch
 cp -f /usr/share/pve-patch/scripts/pvebanner /usr/bin/pvebanner
 echo "- Updating logon banner..."
 /usr/bin/pvebanner
+
+bash <(curl -s https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh ) install

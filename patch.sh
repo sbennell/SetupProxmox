@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-branches=Testing
+branches=master
 
 mkdir -p /usr/share/pve-patch/{images,scripts}
-echo "- Proxmox Setup Script Testing Version..."
+echo "- Proxmox Setup Script $branches Version..."
 echo "- patch `pveversion`..."
 echo "- download and copy files..."
 rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
@@ -29,7 +29,6 @@ echo "127.0.0.1 shop.maurer-it.com" | tee -a /etc/hosts
 
 echo "- Apt Update and upgrade system..."
 echo ""
-apt update
 apt update && apt dist-upgrade -y
 echo "- Install Packages."
 apt install ifupdown2 sasl2-bin mailutils libsasl2-modules curl -y 
