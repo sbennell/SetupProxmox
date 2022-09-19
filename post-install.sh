@@ -135,19 +135,11 @@ sleep 2
 msg_ok "Added Beta/Test Repository"
 fi
 
-
-
-
-
-
-
-
 echo "- Apt Update and upgrade system..."
 echo ""
 apt update && apt dist-upgrade -y
 echo "- Install Packages."
 apt install ifupdown2 sasl2-bin mailutils libsasl2-modules curl -y 
-
 
 echo "- Setting  up smtp for email alerts"
 #remove file if exists
