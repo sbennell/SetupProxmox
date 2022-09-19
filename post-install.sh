@@ -13,7 +13,7 @@ HOLD="-"
 CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 branches=master
-my $year = `date +%Y`;
+my $year = `date +%Y`
 
 clear
 echo -e "${BL}This script will Perform Post Install Routines.${CL}"
