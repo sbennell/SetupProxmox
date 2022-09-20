@@ -12,12 +12,15 @@ Use at your own risk! Read the script before you run it.
 ```
 wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
 ```
+```
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh)"
+```
 
 ## Other Scripts
 
 Proxmox CPU Scaling Governor
 ```
-#wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/scripts/scaling-governor.sh -c -O scaling-governor.sh && sudo bash scaling-governor.sh  && rm scaling-governor.sh
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/misc/scaling-governor.sh)"
 
 ```
 
