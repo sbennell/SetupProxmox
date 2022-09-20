@@ -17,7 +17,7 @@ wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-i
 
 Proxmox CPU Scaling Governor
 ```
-#wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && sudo bash patch.sh  && rm patch.sh
+#wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/scripts/scaling-governor.sh -c -O scaling-governor.sh && sudo bash scaling-governor.sh  && rm scaling-governor.sh
 
 ```
 
