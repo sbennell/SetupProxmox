@@ -125,7 +125,7 @@ fi
 read -r -p "Add Bennell IT subscription Licence <y/N> " prompt
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
 then
-msg_info "Add Bennell IT subscription Licence"
+msg_info "Adding Bennell IT subscription Licence"
 /usr/share/pve-patch/scripts/subscription.sh &
 #wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/70BITsubscription
 sleep 2
@@ -135,7 +135,7 @@ fi
 read -r -p "Add Bennell IT Logon Banner  <y/N> " prompt
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
 then
-msg_info "Add Bennell IT subscription Licence"
+msg_info "Adding Bennell IT Logon Banner"
 /usr/share/pve-patch/scripts/pvebanner.sh &
 wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/90pvebanner
 sleep 2
