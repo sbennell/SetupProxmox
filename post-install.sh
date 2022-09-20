@@ -78,6 +78,50 @@ sed -i "s/^deb/#deb/g" /etc/apt/sources.list.d/pve-enterprise.list
 msg_ok "Disabled Enterprise Repository"
 fi
 
+read -r -p "Add/Correct PVE7 Sources (sources.list)? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Adding or Correcting PVE7 Sources"
+cat <<EOF > /etc/apt/sources.list
+deb http://ftp.debian.org/debian bullseye main contrib
+deb http://ftp.debian.org/debian bullseye-updates main contrib
+deb http://security.debian.org/debian-security bullseye-security main contrib
+EOF
+sleep 2
+msg_ok "Added or Corrected PVE7 Sources"
+fi
+
+read -r -p "Enable No-Subscription Repository? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Enabling No-Subscription Repository"
+cat <<EOF >> /etc/apt/sources.list
+deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
+EOF
+sleep 2
+msg_ok "Enabled No-Subscription Repository"
+fi
+
+read -r -p "Add (Disabled) Beta/Test Repository? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Adding Beta/Test Repository and set disabled"
+cat <<EOF >> /etc/apt/sources.list
+# deb http://download.proxmox.com/debian/pve bullseye pvetest
+EOF
+sleep 2
+msg_ok "Added Beta/Test Repository"
+fi
+
+read -r -p "Update Proxmox VE 7 now? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Updating Proxmox VE 7 (Patience)"
+apt-get update &>/dev/null
+apt-get -y dist-upgrade &>/dev/null
+msg_ok "Updated Proxmox VE 7 (⚠ Reboot Recommended)"
+fi
+
 read -r -p "Add Bennell IT subscription Licence <y/N> " prompt
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
 then
@@ -127,50 +171,6 @@ msg_info "Running 365 SMTP Setup"
 /usr/share/pve-patch/scripts/smtp.sh &&
 sleep 2
 msg_ok "SMTP Setup Done"
-fi
-
-read -r -p "Add/Correct PVE7 Sources (sources.list)? <y/N> " prompt
-if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
-then
-msg_info "Adding or Correcting PVE7 Sources"
-cat <<EOF > /etc/apt/sources.list
-deb http://ftp.debian.org/debian bullseye main contrib
-deb http://ftp.debian.org/debian bullseye-updates main contrib
-deb http://security.debian.org/debian-security bullseye-security main contrib
-EOF
-sleep 2
-msg_ok "Added or Corrected PVE7 Sources"
-fi
-
-read -r -p "Enable No-Subscription Repository? <y/N> " prompt
-if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
-then
-msg_info "Enabling No-Subscription Repository"
-cat <<EOF >> /etc/apt/sources.list
-deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
-EOF
-sleep 2
-msg_ok "Enabled No-Subscription Repository"
-fi
-
-read -r -p "Add (Disabled) Beta/Test Repository? <y/N> " prompt
-if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
-then
-msg_info "Adding Beta/Test Repository and set disabled"
-cat <<EOF >> /etc/apt/sources.list
-# deb http://download.proxmox.com/debian/pve bullseye pvetest
-EOF
-sleep 2
-msg_ok "Added Beta/Test Repository"
-fi
-
-read -r -p "Update Proxmox VE 7 now? <y/N> " prompt
-if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
-then
-msg_info "Updating Proxmox VE 7 (Patience)"
-apt-get update &>/dev/null
-apt-get -y dist-upgrade &>/dev/null
-msg_ok "Updated Proxmox VE 7 (⚠ Reboot Recommended)"
 fi
 
 read -r -p "Reboot Proxmox VE 7 now? <y/N> " prompt
