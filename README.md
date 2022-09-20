@@ -10,12 +10,14 @@ Use at your own risk! Read the script before you run it.
 1. Connect to node via SSH
 2. Run
 
-```bash
-# if root
 wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
 
-# if non-root
-wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && sudo bash patch.sh  && rm patch.sh
+
+## Other Scripts
+
+Proxmox CPU Scaling Governor
+```
+#wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && sudo bash patch.sh  && rm patch.sh
 
 ```
 
