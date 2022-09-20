@@ -22,5 +22,11 @@ wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-i
 ## Restore Enterprise repository
 
 ```
-mv /etc/apt/sources.list.d/pve-enterprise.list~ /etc/apt/sources.list.d/pve-enterprise.list
+sed -i "s/^#deb/deb/g" /etc/apt/sources.list.d/pve-enterprise.list
+```
+
+## Remove Bennell IT subscription Licence 
+
+```
+apt purge pve-bit-subscription
 ```
