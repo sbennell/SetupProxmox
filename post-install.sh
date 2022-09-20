@@ -48,8 +48,8 @@ function msg_ok() {
 }
 clear
 
-rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
-rm -f /usr/share/pve-patch/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner,pvebanner.sh,smtp.sh}
+
+rm -rf /usr/share/pve-patch/
 rm -f /etc/apt/apt.conf.d/{70BITsubscription,80DarkMode,90pvebanner}
 
 mkdir -p /usr/share/pve-patch/{images,scripts}
