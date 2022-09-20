@@ -19,7 +19,7 @@ wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-i
 
 ```
 
-## Restore Enterprise repository
+## Restore/Enable Enterprise repository
 
 ```
 sed -i "s/^#deb/deb/g" /etc/apt/sources.list.d/pve-enterprise.list
