@@ -83,7 +83,7 @@ if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]
 then
 msg_info "Add Bennell IT subscription Licence"
 /usr/share/pve-patch/scripts/subscription.sh &
-wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/70BITsubscription
+#wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/70BITsubscription
 sleep 2
 msg_ok "Added Bennell IT subscription Licence"
 fi
