@@ -1,5 +1,5 @@
-apt purge pve-fake-subscription &>/dev/null
-curl -s https://api.github.com/repos/sbennell/pve-fake-subscription/releases/latest \
+apt purge pve-bit-subscription &>/dev/null
+curl -s https://api.github.com/repos/sbennell/pve-bit-subscription/releases/latest \
 | grep "browser_download_url.*deb" \
 | cut -d : -f 2,3 \
 | tr -d \" \
