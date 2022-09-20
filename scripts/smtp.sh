@@ -1,10 +1,10 @@
 #remove file if exists
 rm -f /etc/postfix/{main.cf,emailsetupinfo.txt,sasl_passwd,sender_canonical}
 #Downloading Files
-wget -nc -qP /etc/postfix/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/mail/main.cf
+wget -nc -qP /etc/postfix/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/files/main.cf
 
 Email=$(whiptail --inputbox "Enter Office 365 Email Address?" 8 39 noreply@bennellit.com.au --title "Email Address" 3>&1 1>&2 2>&3)
-Password=$(whiptail --inputbox "Enter Office 365 Email Password?" 8 39  --title "Email Password" 3>&1 1>&2 2>&3)
+Password=$(whiptail --passwordbox "Enter Office 365 Email Password" 8 78 --title "Email Password" 3>&1 1>&2 2>&3)
 
 echo "[smtp.office365.com]:587 $Email:$Password" >> /etc/postfix/sasl_passwd
 echo "/.+/ $Email" >> /etc/postfix/sender_canonical
