@@ -57,18 +57,19 @@ function msg_ok() {
 }
 clear
 
-mkdir -p /usr/share/pve-patch/{images,scripts}
-rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
-rm -f /usr/share/pve-patch/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner}
+rm -f /usr/share/SetupProxmox/images/{favicon.ico,logo-128.png,proxmox_logo.png}
+rm -f /usr/share/SetupProxmox/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner}
+rm -f /etc/apt/apt.conf.d/{70BITsubscription,80DarkMode,90pvebanner}
 
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/favicon.ico
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/logo-128.png
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/proxmox_logo.png
-wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner}
-chmod -R a+x /usr/share/pve-patch/scripts
-cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
-chmod +x /usr/share/pve-patch/scripts/apply.sh
-/usr/share/pve-patch/scripts/apply.sh
+mkdir -p /usr/share/SetupProxmox/{images,scripts}
+wget -nc -qP /usr/share/SetupProxmox/images/ https://raw.githubusercontent.com/sbennell/SetupProxmox/$branches/images/favicon.ico
+wget -nc -qP /usr/share/SetupProxmox/images/ https://raw.githubusercontent.com/sbennell/SetupProxmox/$branches/images/logo-128.png
+wget -nc -qP /usr/share/SetupProxmox/images/ https://raw.githubusercontent.com/sbennell/SetupProxmox/$branches/images/proxmox_logo.png
+wget -qP /usr/share/SetupProxmox/scripts/ https://raw.githubusercontent.com/sbennell/SetupProxmox/$branches/scripts/{darkmode.sh,pvebanner.sh,subscription.sh}
+chmod -R a+x /usr/share/SetupProxmox/scripts
+chmod +x /usr/share/SetupProxmox/scripts/darkmode.sh
+chmod +x /usr/share/SetupProxmox/scripts/pvebanner.sh
+chmod +x /usr/share/SetupProxmox/scripts/subscription.sh
 
 
 header_info
@@ -85,8 +86,18 @@ read -r -p "Add Bennell IT subscription Licence <y/N> " prompt
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
 then
 msg_info "Add Bennell IT subscription Licence"
-/usr/share/pve-patch/scripts/subscription.sh
-wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/70BITsubscription
+/usr/share/SetupProxmox/scripts/subscription.sh
+wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/$branches/apt.conf.d/70BITsubscription
+sleep 2
+msg_ok "Added Bennell IT subscription Licence"
+fi
+
+read -r -p "Add Bennell IT Logon Banner  <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Add Bennell IT subscription Licence"
+/usr/share/SetupProxmox/scripts/pvebanner.sh
+wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/$branches/apt.conf.d/90pvebanner
 sleep 2
 msg_ok "Added Bennell IT subscription Licence"
 fi
@@ -107,8 +118,8 @@ read -r -p "Add and Enable Dark Mode  <y/N> " prompt
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
 then
 msg_info "Adding Dark Mode"
-wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/80DarkMode
-/usr/share/pve-patch/scripts/darkmode.sh
+wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/$branches/apt.conf.d/80DarkMode
+/usr/share/SetupProxmox/scripts/darkmode.sh
 sleep 2
 msg_ok "Enabled Dark Mode"
 fi
@@ -116,6 +127,7 @@ fi
 read -r -p "Enable No-Subscription Repository? <y/N> " prompt
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
 then
+msg_info "Enabling No-Subscription Repository"
 DEBIAN_CODENAME=`cat /etc/os-release | grep VERSION_CODENAME | cut -d "=" -f2`
 ENTERPRISE_REPO_LIST="/etc/apt/sources.list.d/pve-enterprise.list"
 FREE_REPO_LIST="/etc/apt/sources.list.d/pve.list"
@@ -131,23 +143,31 @@ sleep 2
 msg_ok "Enabled No-Subscription Repository"
 fi
 
+read -r -p "Update Proxmox VE 7 now? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Updating Proxmox VE 7 (Patience)"
+apt-get update &>/dev/null
+apt-get -y dist-upgrade &>/dev/null
+msg_ok "Updated Proxmox VE 7 (⚠ Reboot Recommended)"
+fi
+
+
 echo "- Apt Update and upgrade system..."
 echo ""
 apt update && apt dist-upgrade -y
 echo "- Install Packages."
 apt install ifupdown2 sasl2-bin mailutils libsasl2-modules curl -y 
 
+
 echo "- Setting  up smtp for email alerts"
 #remove file if exists
 rm -f /etc/postfix/{main.cf,emailsetupinfo.txt,sasl_passwd,sender_canonical}
 #Downloading Files
-wget -nc -qP /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/main.cf
+wget -nc -qP /etc/postfix/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/mail/main.cf
 
-echo "Enter Office 365 Email Address?"
-read Email
-
-echo "Enter Office 365 Email Password?"
-read Password
+Email=$(whiptail --inputbox "Enter Office 365 Email Address?" 8 39 noreply@bennellit.com.au --title "Email Address" 3>&1 1>&2 2>&3)
+Password=$(whiptail --inputbox "Enter Office 365 Email Password?" 8 39  --title "Email Password" 3>&1 1>&2 2>&3)
 
 echo "[smtp.office365.com]:587 $Email:$Password" >> /etc/postfix/sasl_passwd
 echo "/.+/ $Email" >> /etc/postfix/sender_canonical
@@ -171,3 +191,15 @@ echo "IP Address: $IP" >> /etc/postfix/emailsetupinfo.txt
 sendmail -v server@lab-network.xyz < /etc/postfix/emailsetupinfo.txt
 
 echo "- done!"
+
+read -r -p "Reboot Proxmox VE 7 now? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Rebooting Proxmox VE 7"
+sleep 2
+msg_ok "Completed Post Install Routines"
+reboot
+fi
+
+sleep 2
+msg_ok "Completed Post Install Routines"
