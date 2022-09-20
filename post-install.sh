@@ -115,7 +115,7 @@ if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]
 then
 msg_info "Adding Dark Mode"
 wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/80DarkMode 
-/usr/share/pve-patch/scripts/darkmode.sh &
+bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/PVEDiscordDark.sh ) install &>/dev/null
 sleep 2
 msg_ok "Enabled Dark Mode"
 fi
