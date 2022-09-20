@@ -116,23 +116,19 @@ fi
 read -r -p "Enable No-Subscription Repository? <y/N> " prompt
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
 then
-msg_info "Enabling No-Subscription Repository"
-cat <<EOF >> /etc/apt/sources.list
-deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
-EOF
+DEBIAN_CODENAME=`cat /etc/os-release | grep VERSION_CODENAME | cut -d "=" -f2`
+ENTERPRISE_REPO_LIST="/etc/apt/sources.list.d/pve-enterprise.list"
+FREE_REPO_LIST="/etc/apt/sources.list.d/pve.list"
+FREE_REPO_LINE="deb http://download.proxmox.com/debian/pve $DEBIAN_CODENAME pve-no-subscription"
+
+function pve_patch() {
+  echo "- apply patch..."
+  echo $FREE_REPO_LINE > $FREE_REPO_LIST
+  [ -f $ENTERPRISE_REPO_LIST ] && mv $ENTERPRISE_REPO_LIST $ENTERPRISE_REPO_LIST~
+  cp --backup /usr/share/pve-patch/images/* /usr/share/pve-manager/images/
+}
 sleep 2
 msg_ok "Enabled No-Subscription Repository"
-fi
-
-read -r -p "Add (Disabled) Beta/Test Repository? <y/N> " prompt
-if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
-then
-msg_info "Adding Beta/Test Repository and set disabled"
-cat <<EOF >> /etc/apt/sources.list
-# deb http://download.proxmox.com/debian/pve bullseye pvetest
-EOF
-sleep 2
-msg_ok "Added Beta/Test Repository"
 fi
 
 echo "- Apt Update and upgrade system..."
