@@ -13,15 +13,6 @@ HOLD="-"
 CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 clear
-echo -e "${BL}This script will Perform Post Install Routines.${CL}"
-while true; do
-    read -p "Start the Proxmox Post Install Script From Bennell IT (y/n)?" yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
 if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
         echo -e "\n${RD}⚠ This version of Proxmox Virtual Environment is not supported"
         echo -e "Requires PVE Version: 7.XX${CL}"
