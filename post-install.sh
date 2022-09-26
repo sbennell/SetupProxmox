@@ -30,6 +30,7 @@ echo -e "${RD}
                      www.bennellit.com.au                        
                  Proxmox Post Install Script
 ${CL}"
+sleep 10
 }
 
 function msg_info() {
