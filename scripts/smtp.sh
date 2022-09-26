@@ -22,10 +22,8 @@ if [ $(dpkg-query -W -f='${Status}' libsasl2-modules 2>/dev/null | grep -c "ok i
 
       varmailserver=$(whiptail --inputbox "What is the mail server hostname?" 8 39 smtp.office365.com --title "mail server hostname" 3>&1 1>&2 2>&3)
 
-      varmailport=$(whiptail --inputbox " What is the mail server port? (Usually 587 - can be 25 (no tls))" 8 39 smtp.office365.com --title "mail server Port" 3>&1 1>&2 2>&3)
-
-      read -p  "- Does the server require TLS? y = yes / anything = no: " -n 1 -r 
-      
+      varmailport=$(whiptail --inputbox " What is the mail server port? (Usually 587 - can be 25 (no tls))" 8 39 587 --title "mail server Port" 3>&1 1>&2 2>&3)
+     
       if (whiptail --title "require TLS?" --yesno "Does the server require TLS?" 8 78); then
           vartls=yes
       else
