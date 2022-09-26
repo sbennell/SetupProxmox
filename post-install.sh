@@ -12,19 +12,7 @@ BFR="\\r\\033[K"
 HOLD="-"
 CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
-branches=master
-my $year = `date +%Y`;
-
 clear
-echo -e "${BL}This script will Perform Post Install Routines.${CL}"
-while true; do
-    read -p "Start the Proxmox Post Install Script From Bennell IT (y/n)?" yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
 if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
         echo -e "\n${RD}⚠ This version of Proxmox Virtual Environment is not supported"
         echo -e "Requires PVE Version: 7.XX${CL}"
@@ -34,16 +22,15 @@ if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
 fi
 function header_info {
 echo -e "${RD}
-888888b.                                       888 888     8888888 88888888888
-888  "88b                                      888 888       888       888
-888  .88P                                      888 888       888       888
-8888888K.   .d88b.  88888b.  88888b.   .d88b.  888 888       888       888
-888  "Y88b d8P  Y8b 888 "88b 888 "88b d8P  Y8b 888 888       888       888
-888    888 88888888 888  888 888  888 88888888 888 888       888       888
-888   d88P Y8b.     888  888 888  888 Y8b.     888 888       888       888
-8888888P"   "Y8888  888  888 888  888  "Y8888  888 888     8888888     888
-                              www.bennellit.com.au                        $year
-                          Proxmox Post Install Script
+
+    ____                                 __    __           ____  ______
+   / __ )  ___    ____    ____   ___    / /   / /          /  _/ /_  __/
+  / __  | / _ \  / __ \  / __ \ / _ \  / /   / /           / /    / /   
+ / /_/ / /  __/ / / / / / / / //  __/ / /   / /          _/ /    / /    
+/_____/  \___/ /_/ /_/ /_/ /_/ \___/ /_/   /_/          /___/   /_/   
+
+                     www.bennellit.com.au                        
+                 Proxmox Post Install Script
 ${CL}"
 }
 
@@ -58,19 +45,19 @@ function msg_ok() {
 }
 clear
 
+
+rm -rf /usr/share/pve-patch/
+rm -f /etc/apt/apt.conf.d/{70BITsubscription,80DarkMode,90pvebanner}
+
 mkdir -p /usr/share/pve-patch/{images,scripts}
-rm -f /usr/share/pve-patch/images/{favicon.ico,logo-128.png,proxmox_logo.png}
-rm -f /usr/share/pve-patch/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner}
-
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/favicon.ico
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/logo-128.png
-wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/images/proxmox_logo.png
-wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/{darkmode.sh,subscription.sh,apply.sh,pvebanner}
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/images/favicon.ico
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/images/logo-128.png
+wget -nc -qP /usr/share/pve-patch/images/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/images/proxmox_logo.png
+wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/scripts/{darkmode.sh,pvebanner.sh,subscription.sh,smtp.sh}
 chmod -R a+x /usr/share/pve-patch/scripts
-cp -f /usr/share/pve-patch/scripts/90pvepatch /etc/apt/apt.conf.d/90pvepatch
-chmod +x /usr/share/pve-patch/scripts/apply.sh
-/usr/share/pve-patch/scripts/apply.sh
-
+chmod +x /usr/share/pve-patch/scripts/darkmode.sh
+chmod +x /usr/share/pve-patch/scripts/pvebanner.sh
+chmod +x /usr/share/pve-patch/scripts/subscription.sh
 
 header_info
 read -r -p "Disable Enterprise Repository? <y/N> " prompt
@@ -82,36 +69,17 @@ sed -i "s/^deb/#deb/g" /etc/apt/sources.list.d/pve-enterprise.list
 msg_ok "Disabled Enterprise Repository"
 fi
 
-read -r -p "Add Bennell IT subscription Licence <y/N> " prompt
+read -r -p "Add/Correct PVE7 Sources (sources.list)? <y/N> " prompt
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
 then
-msg_info "Add Bennell IT subscription Licence"
-/usr/share/pve-patch/scripts/subscription.sh
-wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/70BITsubscription
+msg_info "Adding or Correcting PVE7 Sources"
+cat <<EOF > /etc/apt/sources.list
+deb http://ftp.debian.org/debian bullseye main contrib
+deb http://ftp.debian.org/debian bullseye-updates main contrib
+deb http://security.debian.org/debian-security bullseye-security main contrib
+EOF
 sleep 2
-msg_ok "Added Bennell IT subscription Licence"
-fi
-
-read -r -p "Add Bennell IT SSH Key <y/N> " prompt
-if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
-then
-msg_info "Adding SSH Key - Bennell IT..."
-mkdir -p ~/.ssh 
-touch ~/.ssh/authorized_keys
-echo ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAkXk0+tC1ZMiWgTQvE/GeB9+TuPWTf8mr9zVOYdNhF+KFXxc/DjMjIPNCAUxtQErlush1GF87b7gaEIC2F5p/+xr39gnt5panjT2AJmVQm9GrSc0LwZOHducgB9SeW7F6A2hA0dtEDxOPHC88ipT9qvTZdeC+mgoNmyIAIMmnPVcZOqQm7iVUf3kJCRWVGI/csE1UYpZ1tLpkaNqjP0Iy7cQvNgodJWh8Mg//TD6ESKBQ35P3+6zT2zEpIK/hQ5eaW5Uu82kSt1ZGuNaPukfCra0cjWr2n4hC+C3E9m3K/3ZV43usaxwSbPa6R/jJE4fyqpC2hqdTKW8Z66mVTC8EpQ== Bennell IT >> ~/.ssh/authorized_keys
-chmod -R go= ~/.ssh
-sleep 2
-msg_ok "Added SSH Key - Bennell IT"
-fi
-
-read -r -p "Add and Enable Dark Mode  <y/N> " prompt
-if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
-then
-msg_info "Adding Dark Mode"
-wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/pve-patch/$branches/scripts/80DarkMode
-/usr/share/pve-patch/scripts/darkmode.sh
-sleep 2
-msg_ok "Enabled Dark Mode"
+msg_ok "Added or Corrected PVE7 Sources"
 fi
 
 read -r -p "Enable No-Subscription Repository? <y/N> " prompt
@@ -136,51 +104,74 @@ sleep 2
 msg_ok "Added Beta/Test Repository"
 fi
 
+read -r -p "Update Proxmox VE 7 now? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Updating Proxmox VE 7 (Patience)"
+apt-get update &>/dev/null
+apt-get -y dist-upgrade &>/dev/null
+msg_ok "Updated Proxmox VE 7 (⚠ Reboot Recommended)"
+fi
 
+read -r -p "Add Bennell IT subscription Licence <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Adding Bennell IT subscription Licence"
+/usr/share/pve-patch/scripts/subscription.sh &
+#wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/70BITsubscription
+sleep 2
+msg_ok "Added Bennell IT subscription Licence"
+fi
 
+read -r -p "Add Bennell IT Logon Banner  <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Adding Bennell IT Logon Banner"
+/usr/share/pve-patch/scripts/pvebanner.sh &
+wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/90pvebanner
+sleep 2
+msg_ok "Added Bennell IT Logon Banner"
+fi
 
+read -r -p "Add Bennell IT SSH Key <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Adding SSH Key - Bennell IT..."
+mkdir -p ~/.ssh  &>/dev/null
+touch ~/.ssh/authorized_keys &>/dev/null
+echo ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAkXk0+tC1ZMiWgTQvE/GeB9+TuPWTf8mr9zVOYdNhF+KFXxc/DjMjIPNCAUxtQErlush1GF87b7gaEIC2F5p/+xr39gnt5panjT2AJmVQm9GrSc0LwZOHducgB9SeW7F6A2hA0dtEDxOPHC88ipT9qvTZdeC+mgoNmyIAIMmnPVcZOqQm7iVUf3kJCRWVGI/csE1UYpZ1tLpkaNqjP0Iy7cQvNgodJWh8Mg//TD6ESKBQ35P3+6zT2zEpIK/hQ5eaW5Uu82kSt1ZGuNaPukfCra0cjWr2n4hC+C3E9m3K/3ZV43usaxwSbPa6R/jJE4fyqpC2hqdTKW8Z66mVTC8EpQ== Bennell IT >> ~/.ssh/authorized_keys  &>/dev/null
+chmod -R go= ~/.ssh  &>/dev/null
+sleep 2
+msg_ok "Added SSH Key - Bennell IT"
+fi
 
+read -r -p "Add and Enable Dark Mode  <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Adding Dark Mode"
+wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/80DarkMode 
+bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/PVEDiscordDark.sh ) install &>/dev/null
+sleep 2
+msg_ok "Enabled Dark Mode"
+fi
 
+read -r -p "Do you what to setup 365 SMTP  <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Running 365 SMTP Setup"
+/usr/share/pve-patch/scripts/smtp.sh &&
+sleep 2
+msg_ok "SMTP Setup Done"
+fi
 
+read -r -p "Reboot Proxmox VE 7 now? <y/N> " prompt
+if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]
+then
+msg_info "Rebooting Proxmox VE 7"
+sleep 2
+msg_ok "Completed Post Install Routines"
+reboot
+fi
 
-echo "- Apt Update and upgrade system..."
-echo ""
-apt update && apt dist-upgrade -y
-echo "- Install Packages."
-apt install ifupdown2 sasl2-bin mailutils libsasl2-modules curl -y 
-
-
-echo "- Setting  up smtp for email alerts"
-#remove file if exists
-rm -f /etc/postfix/{main.cf,emailsetupinfo.txt,sasl_passwd,sender_canonical}
-#Downloading Files
-wget -nc -qP /etc/postfix/ https://raw.githubusercontent.com/sbennell/pve-patch/master/mail/main.cf
-
-echo "Enter Office 365 Email Address?"
-read Email
-
-echo "Enter Office 365 Email Password?"
-read Password
-
-echo "[smtp.office365.com]:587 $Email:$Password" >> /etc/postfix/sasl_passwd
-echo "/.+/ $Email" >> /etc/postfix/sender_canonical
-
-postmap hash:/etc/postfix/sasl_passwd
-postmap hash:/etc/postfix/sender_canonical
-chown root:root /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db  
-chmod 644 /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db  
-chown root:root /etc/postfix/sender_canonical /etc/postfix/sender_canonical.db  
-chmod 644 /etc/postfix/sender_canonical /etc/postfix/sender_canonical.db
-service postfix restart
-
-Serverfqdn=$(hostname -f)
-IP=$(hostname -I)
-
-echo "to: server@bennellit.com.au" >> /etc/postfix/emailsetupinfo.txt
-echo "subject:New Server Setup Info $Serverfqdn" >> /etc/postfix/emailsetupinfo.txt
-echo "Hostname: $Serverfqdn" >> /etc/postfix/emailsetupinfo.txt
-echo "IP Address: $IP" >> /etc/postfix/emailsetupinfo.txt
-
-sendmail -v server@lab-network.xyz < /etc/postfix/emailsetupinfo.txt
-
-echo "- done!"
+sleep 2
+msg_ok "Completed Post Install Routines"

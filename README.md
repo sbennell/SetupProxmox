@@ -1,6 +1,6 @@
 # SetupProxmox
 
-Removes subscription dialogs, replaces enterprise repository with non-subscription repository, apt Update and apt upgrade system, Add Benenell IT SSh Key and Configure Postfix to use Office365 SMTP Relay. Tested on PVE 5.0 to 7.2-11
+Removes subscription dialogs, replaces enterprise repository with non-subscription repository, apt Update and apt upgrade system, Add Benenell IT SSh Key and Configure Postfix to use Office365 SMTP Relay. For PVE 7.x Tested on PVE 7.2-11
 
 
 Use at your own risk! Read the script before you run it. 
@@ -9,18 +9,29 @@ Use at your own risk! Read the script before you run it.
 
 1. Connect to node via SSH
 2. Run
+```
+wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
+```
+```
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh)"
+```
 
-```bash
-# if root
-wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/patch.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
+## Other Scripts
 
-# if non-root
-wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/patch.sh -c -O patch.sh && sudo bash patch.sh  && rm patch.sh
+Proxmox CPU Scaling Governor
+```
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/misc/scaling-governor.sh)"
 
 ```
 
-## Restore Enterprise repository
+## Restore/Enable Enterprise repository
 
 ```
-mv /etc/apt/sources.list.d/pve-enterprise.list~ /etc/apt/sources.list.d/pve-enterprise.list
+sed -i "s/^#deb/deb/g" /etc/apt/sources.list.d/pve-enterprise.list
+```
+
+## Remove Bennell IT subscription Licence 
+
+```
+apt purge pve-bit-subscription
 ```
