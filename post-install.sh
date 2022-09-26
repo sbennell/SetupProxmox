@@ -109,12 +109,20 @@ case $CHOICE in
 
 	"2)")   
 	    msg_info "Adding Beta/Test Repository and set disabled"
-		cat <<EOF >> /etc/apt/sources.list
-		# deb http://download.proxmox.com/debian/pve bullseye pvetest
-		EOF
-		sleep 2
-		msg_ok "Added Beta/Test Repository"
-    ;;
+	    if [ -d "$pve_log_folder" ]; then
+	    	echo "- Server is a PVE host"
+	    	echo "- Checking Sources list"
+	    	if grep -Fq "deb http://download.proxmox.com/debian/pve" /etc/apt/sources.list; then
+	    		echo "-- Source looks alredy configured - Skipping"
+	    	else
+	    		echo "-- Adding new entry to sources.list"
+	    		sed -i "\$adeb http://download.proxmox.com/debian/pve $distribution pve-no-subscription" /etc/apt/sources.list
+	    	fi
+	    else
+		echo "- Server is a PBS host"
+	    fi
+	    msg_ok "Added Beta/Test Repository"
+	;;
 
 	"3)")   
         msg_info "Updating Proxmox VE 7 (Patience)"
