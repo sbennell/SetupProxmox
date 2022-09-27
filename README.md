@@ -10,10 +10,7 @@ Use at your own risk! Read the script before you run it.
 1. Connect to node via SSH
 2. Run
 ```
-wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
-```
-```
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/proxmox_toolbox.sh)"
 ```
 
 ## Other Scripts
