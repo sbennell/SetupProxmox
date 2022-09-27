@@ -118,13 +118,25 @@ case $CHOICE in
 
 	"2)")   
 	    msg_info "Adding Beta/Test Repository and set disabled"
-
+	    if [ -d "$pve_log_folder" ]; then
+	    	echo "- Server is a PVE host"
+	    	echo "- Checking Sources list"
+	    	if grep -Fq "deb http://download.proxmox.com/debian/pve" /etc/apt/sources.list; then
+	    		echo "-- Source looks alredy configured - Skipping"
+	    	else
+	    		echo "-- Adding new entry to sources.list"
+	    		sed -i "\$adeb http://download.proxmox.com/debian/pve $distribution pvetest" /etc/apt/sources.list
+	    	fi
+	    else
+		echo "- Server is a PBS host"
+		fi
 	;;
 
 	"3)")   
         msg_info "Updating Proxmox VE 7 (Patience)"
-		apt-get update &>/dev/null
-		apt-get -y dist-upgrade &>/dev/null
+		apt-get update -y -qq
+		apt-get upgrade -y -qq
+		apt-get dist-upgrade -y -qq
 		msg_ok "Updated Proxmox VE 7 (⚠ Reboot Recommended)"
         ;;
 
