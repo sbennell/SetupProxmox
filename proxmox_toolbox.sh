@@ -42,6 +42,20 @@ ${CL}"
 sleep 5
 }
 
+update () {
+		# Check if the /usr/bin/proxmox-update entry for update is already created
+		if [ ! -f /usr/bin/proxmox-update ]; then
+			echo "- Retreiving new bin"
+			wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
+			update
+		else
+		echo "- Updating System"
+			apt-get update -y -qq
+			apt-get upgrade -y -qq
+			apt-get dist-upgrade -y -qq
+		fi
+}
+
 function msg_info() {
     local msg="$1"
     echo -ne " ${HOLD} ${YW}${msg}..."
@@ -155,8 +169,7 @@ case $CHOICE in
 		chmod +x /usr/share/pve-patch/scripts/subscription.sh
 		/usr/share/pve-patch/scripts/subscription.sh &
 		#wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/70BITsubscription
-		sleep 2
-		msg_ok "Added Bennell IT subscription Licence"
+		whiptail --msgbox "Added Bennell IT subscription Licence" 20 78
 	;;
 
 	"5)")   
@@ -166,8 +179,7 @@ case $CHOICE in
 		chmod +x /usr/share/pve-patch/scripts/pvebanner.sh
 		/usr/share/pve-patch/scripts/pvebanner.sh &
 		wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/90pvebanner
-		sleep 2
-		msg_ok "Added Bennell IT Logon Banner"
+		whiptail --msgbox "Added Bennell IT Logon Banner" 20 78
 	;;
 		
 	"6)")   
@@ -176,8 +188,7 @@ case $CHOICE in
 		touch ~/.ssh/authorized_keys &>/dev/null
 		echo ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAkXk0+tC1ZMiWgTQvE/GeB9+TuPWTf8mr9zVOYdNhF+KFXxc/DjMjIPNCAUxtQErlush1GF87b7gaEIC2F5p/+xr39gnt5panjT2AJmVQm9GrSc0LwZOHducgB9SeW7F6A2hA0dtEDxOPHC88ipT9qvTZdeC+mgoNmyIAIMmnPVcZOqQm7iVUf3kJCRWVGI/csE1UYpZ1tLpkaNqjP0Iy7cQvNgodJWh8Mg//TD6ESKBQ35P3+6zT2zEpIK/hQ5eaW5Uu82kSt1ZGuNaPukfCra0cjWr2n4hC+C3E9m3K/3ZV43usaxwSbPa6R/jJE4fyqpC2hqdTKW8Z66mVTC8EpQ== Bennell IT >> ~/.ssh/authorized_keys  &>/dev/null
 		chmod -R go= ~/.ssh  &>/dev/null
-		sleep 2
-		msg_ok "Added SSH Key - Bennell IT"	
+		whiptail --msgbox "Added SSH Key - Bennell IT" 20 78
 	;;
 
 	"7)")   
@@ -185,26 +196,22 @@ case $CHOICE in
 		rm -f /etc/apt/apt.conf.d/80DarkMode
 		wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/80DarkMode 
 		bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/PVEDiscordDark.sh ) install &>/dev/null
-		sleep 2
-		msg_ok "Enabled Dark Mode"
+		whiptail --msgbox "Enabled Dark Mode" 20 78
 	;;
 		
 	"8)")   
 		msg_info "Running 365 SMTP Setup"
 		bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/SetupProxmox/scripts/smtp.sh ) install &>/
-		sleep 2
-		msg_ok "SMTP Setup Done"
+		whiptail --msgbox "SMTP Setup Done" 20 78
 	;;
 
 	"9)")   
 		msg_info "Rebooting Proxmox VE 7"
-		sleep 2
-		msg_ok "Completed Post Install Routines"
 		reboot
 	;;
 		
 	"E)") 
-		msg_ok "Completed Post Install Routines"
+		whiptail --msgbox "Completed Post Install Routines" 20 78
 		exit
 	;;
 		
