@@ -116,10 +116,20 @@ case $CHOICE in
 	    		echo "-- Source looks alredy configured - Skipping"
 	    	else
 	    		echo "-- Adding new entry to sources.list"
-	    		sed -i "\$adeb http://download.proxmox.com/debian/pve $distribution pve-no-subscription" /etc/apt/sources.list
+	    		sed -i "\$adeb http://download.proxmox.com/debian/pve $distribution pvetest" /etc/apt/sources.list
 	    	fi
 	    else
 		echo "- Server is a PBS host"
+	    	echo "- Checking Sources list"
+	    	if grep -Fq "deb http://download.proxmox.com/debian/pve" /etc/apt/sources.list; then
+	    		echo "-- Source looks alredy configured - Skipping"
+	    	else
+	    		echo "-- Adding new entry to sources.list"
+	    		sed -i "\$a#deb http://download.proxmox.com/debian/pbs $distribution pbstest" /etc/apt/sources.list
+	    	fi	
+		
+		
+		
 	    fi
 	    msg_ok "Added Beta/Test Repository"
 	;;
