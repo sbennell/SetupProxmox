@@ -74,7 +74,6 @@ whiptail --title "Proxmox Post Install Script" --menu "Make your choice" 16 100 
 )
 
 
-result=$(whoami)
 case $CHOICE in
 	"1)")   
 		msg_info "Configure sources for no-enterprise repository"
@@ -113,14 +112,14 @@ case $CHOICE in
 			sed -i 's/^/#/' /etc/apt/sources.list.d/pbs-enterprise.list
 		fi
 	fi
-		msg_ok "Disabled Enterprise Repository"
+		whiptail --msgbox "Disabled Enterprise Repository" 20 78
 	;;
 
 	"2)")   
 	    msg_info "Adding Beta/Test Repository and set disabled"
-	    if [ -d "$pve_log_folder" ]; then
-	    	echo "- Server is a PVE host"
-	    	echo "- Checking Sources list"
+		if [ -d "$pve_log_folder" ]; then
+			echo "- Server is a PVE host"
+	 	   	echo "- Checking Sources list"
 	    	if grep -Fq "deb http://download.proxmox.com/debian/pve" /etc/apt/sources.list; then
 	    		echo "-- Source looks alredy configured - Skipping"
 	    	else
@@ -129,7 +128,8 @@ case $CHOICE in
 	    	fi
 	    else
 		echo "- Server is a PBS host"
-		fi
+	    fi
+		whiptail --msgbox "Addied Beta/Test Repository and set disabled" 20 78
 	;;
 
 	"3)")   
@@ -201,6 +201,6 @@ case $CHOICE in
 	;;
 		
 esac
-whiptail --msgbox "$result" 20 78
+
 done
 exit
