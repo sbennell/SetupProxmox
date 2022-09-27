@@ -1,17 +1,26 @@
 #!/usr/bin/env bash -ex
+# check if root
+if [[ $(id -u) -ne 0 ]] ; then echo "- Please run as root / sudo" ; exit 1 ; fi
+
+# -----------------ENVIRONNEMENT VARIABLES----------------------
 set -euo pipefail
+
 shopt -s inherit_errexit nullglob
 YW=`echo "\033[33m"`
-BL=`echo "\033[36m"`
 RD=`echo "\033[01;31m"`
-BGN=`echo "\033[4;92m"`
 GN=`echo "\033[1;92m"`
-DGN=`echo "\033[32m"`
 CL=`echo "\033[m"`
 BFR="\\r\\033[K"
 HOLD="-"
 CM="${GN}✓${CL}"
-CROSS="${RD}✗${CL}"
+
+pve_log_folder="/var/log/pve/tasks/"
+distribution=$(. /etc/*-release;echo $VERSION_CODENAME)
+hostname=$(hostname)
+date=$(date +%Y_%m_%d-%H_%M_%S)
+
+# ---------------END OF ENVIRONNEMENT VARIABLES-----------------
+
 clear
 if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
         echo -e "\n${RD}⚠ This version of Proxmox Virtual Environment is not supported"
