@@ -127,10 +127,6 @@ case $CHOICE in
 	    		echo "-- Adding new entry to sources.list"
 	    		sed -i "\$a#deb http://download.proxmox.com/debian/pbs $distribution pbstest" /etc/apt/sources.list
 	    	fi	
-		
-		
-		
-	    fi
 	    msg_ok "Added Beta/Test Repository"
 	;;
 
