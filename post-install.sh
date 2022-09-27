@@ -120,14 +120,20 @@ case $CHOICE in
 		if [ -d "$pve_log_folder" ]; then
 			echo "- Server is a PVE host"
 	 	   	echo "- Checking Sources list"
-	    	if grep -Fq "deb http://download.proxmox.com/debian/pve" /etc/apt/sources.list; then
+	    	if grep -Fq "deb http://download.proxmox.com/debian/pve $distribution pvetest" /etc/apt/sources.list; then
 	    		echo "-- Source looks alredy configured - Skipping"
 	    	else
 	    		echo "-- Adding new entry to sources.list"
-	    		sed -i "\$adeb http://download.proxmox.com/debian/pve $distribution pvetest" /etc/apt/sources.list
+	    		sed -i "\$a#deb http://download.proxmox.com/debian/pve $distribution pvetest" /etc/apt/sources.list
 	    	fi
 	    else
 		echo "- Server is a PBS host"
+	    	echo "- Checking Sources list"
+	    	if grep -Fq "deb http://download.proxmox.com/debian/pbs $distribution pbstest" /etc/apt/sources.list; then
+	    		echo "-- Source looks alredy configured - Skipping"
+	    	else
+	    		echo "-- Adding new entry to sources.list"
+	    		sed -i "\$a#deb http://download.proxmox.com/debian/pbs $distribution pbstest" /etc/apt/sources.list
 	    fi
 		whiptail --msgbox "Addied Beta/Test Repository and set disabled" 20 78
 	;;
