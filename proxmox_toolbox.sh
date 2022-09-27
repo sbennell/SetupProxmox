@@ -58,7 +58,7 @@ update () {
 
 if  [[ $1 = "-u" ]]; then
 	update
-Exit
+exit
 fi
 	
 function msg_info() {
