@@ -1,5 +1,5 @@
 #!/usr/bin/env bash -ex
-# check if root
+# check if root 1
 if [[ $(id -u) -ne 0 ]] ; then echo "- Please run as root / sudo" ; exit 1 ; fi
 
 # -----------------ENVIRONNEMENT VARIABLES----------------------
