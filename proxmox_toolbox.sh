@@ -56,6 +56,14 @@ update () {
 		fi
 }
 
+getcontentcheck() {
+exitcode=$?
+if [ $exitcode -ne 0 ]; then
+	echo "- Error retreiving necessary file - control your internet connection"
+	sleep 7
+	main_menu
+fi
+
 if  [[ $1 = "-u" ]]; then
 	update
 exit
