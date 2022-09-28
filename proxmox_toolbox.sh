@@ -24,7 +24,6 @@ date=$(date +%Y_%m_%d-%H_%M_%S)
 if [ ! -f /usr/bin/proxmox-update ]; then
 	echo "- Retreiving new bin"
 	wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
-	update
 else
   echo "- proxmox-update all ready there"
 fi
