@@ -162,20 +162,20 @@ case $CHOICE in
 	"4)")   
 		msg_info "Adding Bennell IT subscription Licence"
 		apt purge pve-bit-subscription -y -qq
-		  curl -s https://api.github.com/repos/sbennell/pve-bit-subscription/releases/latest \
-		  | grep "browser_download_url.*deb" \
-		  | cut -d : -f 2,3 \
-		  | tr -d \" \
-		  | wget -qi -
-		  dpkg -i pve-bit-subscription_*.deb &>/dev/null
-		  rm -f pve-bit-subscription_*.deb &>/dev/null
+		curl -s https://api.github.com/repos/sbennell/pve-bit-subscription/releases/latest \
+		| grep "browser_download_url.*deb" \
+		| cut -d : -f 2,3 \
+		| tr -d \" \
+		| wget -qi -
+		dpkg -i pve-bit-subscription_*.deb &>/dev/null
+		rm -f pve-bit-subscription_*.deb &>/dev/null
     
-		  if grep -Fq "127.0.0.1 shop.maurer-it.com" /etc/hosts; then
+		if grep -Fq "127.0.0.1 shop.maurer-it.com" /etc/hosts; then
 		    echo "-- Check for shop.maurer-it.com block looks alredy configured - Skipping"
-		  else
+		else
 		    echo "-- Blocking shop.maurer-it.com "
 		    sed -i "\$a127.0.0.1 shop.maurer-it.com $distribution pbstest" /etc/hosts
-		  fi
+		fi
 		
 		whiptail --msgbox "Added Bennell IT subscription Licence" 20 78
 	;;
