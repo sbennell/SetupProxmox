@@ -162,17 +162,15 @@ case $CHOICE in
 
 	"4)")   
 		msg_info "Adding Bennell IT subscription Licence"
-		rm -f /etc/apt/apt.conf.d/70BITsubscription
-		wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/scripts/subscription.sh
-		chmod +x /usr/share/pve-patch/scripts/subscription.sh
-		/usr/share/pve-patch/scripts/subscription.sh &
-		#wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/70BITsubscription
+		wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/pve-patch/master/files/pvebanner 
+		chmod +x /usr/bin/pvebanner
+		/usr/bin/pvebanner
+		echo true > /usr/share/pve-patch/enable/pvebanner
 		whiptail --msgbox "Added Bennell IT subscription Licence" 20 78
 	;;
 
 	"5)")   
 		msg_info "Adding Bennell IT Logon Banner"
-		rm -f /etc/apt/apt.conf.d/90pvebanner
 		rm /usr/bin/pvebanner
 		wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/pve-patch/master/files/pvebanner 
 		chmod +x /usr/bin/pvebanner
@@ -192,9 +190,9 @@ case $CHOICE in
 
 	"7)")   
 		msg_info "Adding Dark Mode"
-		rm -f /etc/apt/apt.conf.d/80DarkMode
-		wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/80DarkMode 
-		bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/PVEDiscordDark.sh ) install &>/dev/null
+		rm -f /usr/share/pve-patch/enable/pvebanner
+		wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin update
+		echo true > /usr/share/pve-patch/enable/pvebanner
 		whiptail --msgbox "Enabled Dark Mode" 20 78
 	;;
 		
@@ -205,7 +203,7 @@ case $CHOICE in
 	;;
 
 	"9)")   
-		msg_info "Rebooting Proxmox VE 7"
+		msg_info "Rebooting Server"
 		reboot
 	;;
 		
