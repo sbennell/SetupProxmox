@@ -33,3 +33,10 @@ if [ ! -f /usr/share/pve-patch/enable/BITsubscription ]; then
 else
   echo "- Bennell IT subscription Licence is not enabled"
 fi
+
+echo "- Updating Dark Mode"
+if [ ! -f /usr/share/pve-patch/enable/darkmode ]; then
+  wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin update
+else
+  echo "- Dark Mode is not enabled"
+fi
