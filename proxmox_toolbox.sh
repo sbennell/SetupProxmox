@@ -161,7 +161,14 @@ case $CHOICE in
 
 	"4)")   
 		msg_info "Adding Bennell IT subscription Licence"
-		apt purge pve-bit-subscription -y -qq
+		
+		if [ $(dpkg-query -W -f='${Status}' pve-bit-subscription 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+			echo "- pve-bit-subscription is not installed"
+		else
+			echo "- pve-bit-subscription is installed"
+			apt purge pve-bit-subscription -y -qq
+		fi
+		
 		curl -s https://api.github.com/repos/sbennell/pve-bit-subscription/releases/latest \
 		| grep "browser_download_url.*deb" \
 		| cut -d : -f 2,3 \
