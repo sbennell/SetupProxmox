@@ -21,6 +21,14 @@ date=$(date +%Y_%m_%d-%H_%M_%S)
 
 # ---------------END OF ENVIRONNEMENT VARIABLES-----------------
 
+if [ ! -f /usr/bin/proxmox-update ]; then
+	echo "- Retreiving new bin"
+	wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
+	update
+else
+  echo "- proxmox-update all ready there"
+fi
+
 clear
 if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
         echo -e "\n${RD}⚠ This version of Proxmox Virtual Environment is not supported"
@@ -41,14 +49,6 @@ echo -e "${RD}
 ${CL}"
 sleep 5
 }
-
-if [ ! -f /usr/bin/proxmox-update ]; then
-	echo "- Retreiving new bin"
-	wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
-	update
-else
-  echo "- proxmox-update all ready there"
-fi
 
 snmpconfig() {
 wget -qO /etc/snmp/snmpd.conf https://github.com/sbennell/proxmox_toolbox/raw/main/snmp/snmpd.conf
