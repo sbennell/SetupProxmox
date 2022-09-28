@@ -215,4 +215,5 @@ case $CHOICE in
 esac
 
 done
+whiptail --msgbox "Completed Post Install Routines" 20 78
 exit
