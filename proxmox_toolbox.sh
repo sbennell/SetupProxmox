@@ -176,7 +176,7 @@ case $CHOICE in
 		    echo "-- Blocking shop.maurer-it.com "
 		    sed -i "\$a127.0.0.1 shop.maurer-it.com $distribution pbstest" /etc/hosts
 		  fi
-		fi
+		
 		whiptail --msgbox "Added Bennell IT subscription Licence" 20 78
 	;;
 
