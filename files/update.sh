@@ -9,6 +9,6 @@ if [ ! -f /usr/share/pve-patch/en-pvebanner ]; then
   wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/pve-patch/master/files/pvebanner 
   chmod +x /usr/bin/pvebanner
   /usr/bin/pvebanner
-		else
-		echo "- pvebanner is not enabled"
-		fi
+else
+  echo "- pvebanner is not enabled"
+fi
