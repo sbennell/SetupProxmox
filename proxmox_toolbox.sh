@@ -42,33 +42,18 @@ ${CL}"
 sleep 5
 }
 
-update () {
-		# Check if the /usr/bin/proxmox-update entry for update is already created
-		if [ ! -f /usr/bin/proxmox-update ]; then
-			echo "- Retreiving new bin"
-			wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
-			update
-		else
-		echo "- Updating System"
-			apt-get update -y -qq
-			apt-get upgrade -y -qq
-			apt-get dist-upgrade -y -qq
-		fi
+if [ ! -f /usr/bin/proxmox-update ]; then
+	echo "- Retreiving new bin"
+	wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
+	update
+else
+  echo "- proxmox-update all ready there"
+fi
+
+snmpconfig() {
+wget -qO /etc/snmp/snmpd.conf https://github.com/sbennell/proxmox_toolbox/raw/main/snmp/snmpd.conf
 }
 
-getcontentcheck() {
-exitcode=$?
-if [ $exitcode -ne 0 ]; then
-	echo "- Error retreiving necessary file - control your internet connection"
-	sleep 7
-	main_menu
-fi
-
-if  [[ $1 = "-u" ]]; then
-	update
-exit
-fi
-	
 function msg_info() {
     local msg="$1"
     echo -ne " ${HOLD} ${YW}${msg}..."
@@ -81,7 +66,7 @@ function msg_ok() {
 
 header_info
 
-mkdir -p /usr/share/pve-patch/{images,scripts}
+mkdir -p /usr/share/pve-patch/{enable,scripts,}
 
 clear
 
@@ -188,10 +173,11 @@ case $CHOICE in
 	"5)")   
 		msg_info "Adding Bennell IT Logon Banner"
 		rm -f /etc/apt/apt.conf.d/90pvebanner
-		wget -qP /usr/share/pve-patch/scripts/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/scripts/pvebanner.sh
-		chmod +x /usr/share/pve-patch/scripts/pvebanner.sh
-		/usr/share/pve-patch/scripts/pvebanner.sh &
-		wget -qP /etc/apt/apt.conf.d/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/apt.conf.d/90pvebanner
+		rm /usr/bin/pvebanner
+		wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/pve-patch/master/files/pvebanner 
+		chmod +x /usr/bin/pvebanner
+		/usr/bin/pvebanner
+		echo true > /usr/share/pve-patch/enable/pvebanner
 		whiptail --msgbox "Added Bennell IT Logon Banner" 20 78
 	;;
 		
