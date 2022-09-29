@@ -66,6 +66,7 @@ function msg_ok() {
 
 header_info
 
+msg_info "Running System Updates"
 apt-get update -y -qq
 apt-get upgrade -y -qq
 apt-get dist-upgrade -y -qq
@@ -179,7 +180,7 @@ case $CHOICE in
 			echo "- libsasl2-modules already installed"
 		fi
 
-		msg_ok "Installed usefull dependencies"
+		whiptail --msgbox "Installed usefull dependencies" 20 78
         ;;
 
 	"4)")   
