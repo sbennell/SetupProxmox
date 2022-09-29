@@ -166,7 +166,7 @@ case $CHOICE in
 			echo "- pve-bit-subscription is not installed"
 		else
 			echo "- pve-bit-subscription is installed"
-			apt purge pve-bit-subscription -y -qq
+			apt purge pve-bit-subscription -y &>/dev/null
 		fi
 		
 		curl -s https://api.github.com/repos/sbennell/pve-bit-subscription/releases/latest \
