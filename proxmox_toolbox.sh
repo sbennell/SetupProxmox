@@ -75,7 +75,7 @@ CHOICE=$(
 whiptail --title "Proxmox Post Install Script" --menu "Make your choice" 16 100 9 \
 	"1)" "Configure sources for no-enterprise repository"   \
 	"2)" "Add (Disabled) Beta/Test Repository" \
-	"3)" "Update Proxmox VE 7 now? " \
+	"3)" "Install usefull dependencies & Updating Proxmox" \
 	"4)" "Add Bennell IT subscription Licence" \
 	"5)" "Add Bennell IT Logon Banner" \
 	"6)" "Add Bennell IT SSH Key <y/N>" \
@@ -152,7 +152,27 @@ case $CHOICE in
 	;;
 
 	"3)")   
-        msg_info "Updating Proxmox VE 7 (Patience)"
+        msg_info "Install usefull dependencies & Updating Proxmox (Patience)"
+		if [ $(dpkg-query -W -f='${Status}' ifupdown2 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+			apt-get install -y ifupdown2;
+		else
+			echo "- ifupdown2 already installed"
+		fi
+		if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+			apt-get install -y git;
+		else
+			echo "- git already installed"
+		fi
+		if [ $(dpkg-query -W -f='${Status}' sudo 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+			apt-get install -y sudo;
+		else
+			echo "- sudo already installed"
+		fi
+		if [ $(dpkg-query -W -f='${Status}' libsasl2-modules 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+			apt-get install -y libsasl2-modules;.
+		else
+			echo "- libsasl2-modules already installed"
+		fi
 		apt-get update -y -qq
 		apt-get upgrade -y -qq
 		apt-get dist-upgrade -y -qq
