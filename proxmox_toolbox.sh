@@ -36,6 +36,7 @@ if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
         sleep 3
         exit
 fi
+
 function header_info {
 echo -e "${RD}
     ____                                 __    __           ____  ______
@@ -65,7 +66,11 @@ function msg_ok() {
 
 header_info
 
-mkdir -p /usr/share/pve-patch/{enable,scripts,}
+apt-get update -y -qq
+apt-get upgrade -y -qq
+apt-get dist-upgrade -y -qq
+		
+mkdir -p /usr/share/pve-patch/{enable}
 
 clear
 
@@ -75,7 +80,7 @@ CHOICE=$(
 whiptail --title "Proxmox Post Install Script" --menu "Make your choice" 16 100 9 \
 	"1)" "Configure sources for no-enterprise repository"   \
 	"2)" "Add (Disabled) Beta/Test Repository" \
-	"3)" "Install usefull dependencies & Updating Proxmox" \
+	"3)" "Install usefull dependencies" \
 	"4)" "Add Bennell IT subscription Licence" \
 	"5)" "Add Bennell IT Logon Banner" \
 	"6)" "Add Bennell IT SSH Key <y/N>" \
@@ -152,7 +157,7 @@ case $CHOICE in
 	;;
 
 	"3)")   
-        msg_info "Install usefull dependencies & Updating Proxmox (Patience)"
+        msg_info "Install usefull dependencies"
 		if [ $(dpkg-query -W -f='${Status}' ifupdown2 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
 			apt-get install -y ifupdown2;
 		else
@@ -173,10 +178,8 @@ case $CHOICE in
 		else
 			echo "- libsasl2-modules already installed"
 		fi
-		apt-get update -y -qq
-		apt-get upgrade -y -qq
-		apt-get dist-upgrade -y -qq
-		msg_ok "Updated Proxmox VE 7 (⚠ Reboot Recommended)"
+
+		msg_ok "Installed usefull dependencies"
         ;;
 
 	"4)")   
