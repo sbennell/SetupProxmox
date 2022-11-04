@@ -240,7 +240,7 @@ case $CHOICE in
 		
 	"8)")   
 		msg_info "Running 365 SMTP Setup"
-		bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/SetupProxmox/scripts/smtp.sh ) install &>/
+		bash <(curl -s https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/scripts/smtp.sh ) install &>/
 		whiptail --msgbox "SMTP Setup Done" 20 78
 	;;
 
