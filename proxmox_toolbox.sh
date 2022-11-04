@@ -21,21 +21,25 @@ date=$(date +%Y_%m_%d-%H_%M_%S)
 
 # ---------------END OF ENVIRONNEMENT VARIABLES-----------------
 
-if [ ! -f /usr/bin/proxmox-update ]; then
-	echo "- Retreiving new bin"
-	wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
-else
-  echo "- proxmox-update all ready there"
-fi
-
-clear
-if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
-        echo -e "\n${RD}⚠ This version of Proxmox Virtual Environment is not supported"
-        echo -e "Requires PVE Version: 7.XX${CL}"
-        echo -e "\nExiting..."
-        sleep 3
-        exit
-fi
+update () {
+		# Check if the /usr/bin/proxmox-update entry for update is already created
+		if [ ! -f /usr/bin/proxmox-update ]; then
+			echo "- Retreiving new bin"
+			wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/bennell/proxmox_toolbox/main/bin/proxmox-update && chmod +x "/usr/bin/proxmox-update"
+			update
+		else
+		echo "- Updating System"
+			apt-get update -y -qq
+			apt-get upgrade -y -qq
+			apt-get dist-upgrade -y -qq
+			if grep -Ewqi "no-subscription" /etc/apt/sources.list; then
+				if grep -q ".data.status.toLowerCase() == 'active') {" $proxmoxlib; then
+						echo "- Subscription Message already removed - Skipping"
+					else
+				fi
+			fi
+		fi
+}
 
 function header_info {
 echo -e "${RD}
@@ -65,6 +69,17 @@ function msg_ok() {
 }
 
 header_info
+
+clear
+if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
+        echo -e "\n${RD}⚠ This version of Proxmox Virtual Environment is not supported"
+        echo -e "Requires PVE Version: 7.XX${CL}"
+        echo -e "\nExiting..."
+        sleep 3
+        exit
+fi
+
+update
 
 msg_info "Running System Updates"
 apt-get update -y -qq
