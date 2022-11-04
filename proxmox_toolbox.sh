@@ -21,6 +21,31 @@ date=$(date +%Y_%m_%d-%H_%M_%S)
 
 # ---------------END OF ENVIRONNEMENT VARIABLES-----------------
 
+fristrun () {
+		# Check if the /usr/bin/proxmox-update entry for update is already created
+		if [ ! -f /usr/share/pve-patch/fristrun ]; then
+		mkdir -p /usr/share/pve-patch
+		mkdir -p /usr/share/pve-patch/enable
+		echo true > /usr/share/pve-patch/fristrun
+		echo "- Checking Enterprise Source list"
+			if grep -Fq "#deb https://enterprise.proxmox.com/debian/pve" /etc/apt/sources.list.d/pve-enterprise.list; then
+				echo "-- Entreprise repo looks already commented - Skipping"
+			else
+				echo "-- Hiding Enterprise sources list"
+				sed -i 's/^/#/' /etc/apt/sources.list.d/pve-enterprise.list
+			fi
+		echo "- Checking Enterprise Source list"
+			if grep -Fq "#deb https://enterprise.proxmox.com/debian/pbs" /etc/apt/sources.list.d/pbs-enterprise.list; then
+				echo "-- Entreprise repo looks already commented - Skipping"
+			else
+				echo "-- Hiding Enterprise sources list"
+				sed -i 's/^/#/' /etc/apt/sources.list.d/pbs-enterprise.list
+			fi
+		else
+		
+		fi
+}		
+
 update () {
 		# Check if the /usr/bin/proxmox-update entry for update is already created
 		if [ ! -f /usr/bin/proxmox-update ]; then
@@ -32,12 +57,6 @@ update () {
 			apt-get update -y -qq
 			apt-get upgrade -y -qq
 			apt-get dist-upgrade -y -qq
-			if grep -Ewqi "no-subscription" /etc/apt/sources.list; then
-				if grep -q ".data.status.toLowerCase() == 'active') {" $proxmoxlib; then
-						echo "- Subscription Message already removed - Skipping"
-					else
-				fi
-			fi
 		fi
 }
 
@@ -79,15 +98,9 @@ if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
         exit
 fi
 
+fristrun
 update
-
-msg_info "Running System Updates"
-apt-get update -y -qq
-apt-get upgrade -y -qq
-apt-get dist-upgrade -y -qq
 		
-mkdir -p /usr/share/pve-patch/enable
-
 clear
 
 while [ 1 ]
@@ -228,6 +241,7 @@ case $CHOICE in
 
 	"5)")   
 		msg_info "Adding Bennell IT Logon Banner"
+		rm -f /usr/share/pve-patch/enable/PVEDiscordDark
 		rm /usr/bin/pvebanner
 		wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/pve-patch/master/files/pvebanner 
 		chmod +x /usr/bin/pvebanner
@@ -247,9 +261,9 @@ case $CHOICE in
 
 	"7)")   
 		msg_info "Adding Dark Mode"
-		rm -f /usr/share/pve-patch/enable/pvebanner
+		rm -f /usr/share/pve-patch/enable/PVEDiscordDark
 		wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin update
-		echo true > /usr/share/pve-patch/enable/pvebanner
+		echo true > /usr/share/pve-patch/enable/PVEDiscordDark
 		whiptail --msgbox "Enabled Dark Mode" 20 78
 	;;
 		
