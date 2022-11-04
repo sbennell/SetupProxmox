@@ -71,7 +71,7 @@ apt-get update -y -qq
 apt-get upgrade -y -qq
 apt-get dist-upgrade -y -qq
 		
-mkdir -p /usr/share/pve-patch/{enable}
+mkdir -p /usr/share/pve-patch/enable
 
 clear
 
