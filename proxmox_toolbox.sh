@@ -272,7 +272,6 @@ case $CHOICE in
 	"7)")   
 		msg_info "Adding Dark Mode"
 		rm -f /usr/share/pve-patch/enable/PVEDiscordDark
-		wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin uninstall
 		wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin install
 		echo true > /usr/share/pve-patch/enable/PVEDiscordDark
 		whiptail --msgbox "Enabled Dark Mode" 20 78
