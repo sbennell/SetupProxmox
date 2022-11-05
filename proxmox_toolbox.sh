@@ -27,21 +27,25 @@ fristrun () {
 		mkdir -p /usr/share/pve-patch
 		mkdir -p /usr/share/pve-patch/enable
 		echo true > /usr/share/pve-patch/fristrun
-		echo "- Checking Enterprise Source list"
-			if grep -Fq "#deb https://enterprise.proxmox.com/debian/pve" /etc/apt/sources.list.d/pve-enterprise.list; then
-				echo "-- Entreprise repo looks already commented - Skipping"
-			else
-				echo "-- Hiding Enterprise sources list"
-				sed -i 's/^/#/' /etc/apt/sources.list.d/pve-enterprise.list
-			fi
-		echo "- Checking Enterprise Source list"
-			if grep -Fq "#deb https://enterprise.proxmox.com/debian/pbs" /etc/apt/sources.list.d/pbs-enterprise.list; then
-				echo "-- Entreprise repo looks already commented - Skipping"
-			else
-				echo "-- Hiding Enterprise sources list"
-				sed -i 's/^/#/' /etc/apt/sources.list.d/pbs-enterprise.list
-			fi
-		fi
+				if [ -d "$pve_log_folder" ]; then
+					  echo "- Server is a PVE host"
+					  echo "- Checking Enterprise Source list"
+						if grep -Fq "#deb https://enterprise.proxmox.com/debian/pve" /etc/apt/sources.list.d/pve-enterprise.list; then
+						 echo "-- Entreprise repo looks already commented - Skipping"
+						else
+						 echo "-- Hiding Enterprise sources list"
+						 sed -i 's/^/#/' /etc/apt/sources.list.d/pve-enterprise.list
+					   fi
+					else
+					  echo "- Server is a PBS host"
+					  echo "- Checking Enterprise Source list"
+						if grep -Fq "#deb https://enterprise.proxmox.com/debian/pbs" /etc/apt/sources.list.d/pbs-enterprise.list; then
+						  echo "-- Entreprise repo looks already commented - Skipping"
+						else
+						  echo "-- Hiding Enterprise sources list"
+						  sed -i 's/^/#/' /etc/apt/sources.list.d/pbs-enterprise.list
+						fi
+				fi
 }		
 
 update () {
@@ -62,10 +66,10 @@ function header_info {
 echo -e "${RD}
     ____                                 __    __           ____  ______
    / __ )  ___    ____    ____   ___    / /   / /          /  _/ /_  __/
-  / __  | / _ \  / __ \  / __ \ / _ \  / /   / /           / /    / /   
- / /_/ / /  __/ / / / / / / / //  __/ / /   / /          _/ /    / /    
-/_____/  \___/ /_/ /_/ /_/ /_/ \___/ /_/   /_/          /___/   /_/   
-                     www.bennellit.com.au                        
+  / __  | / _ \  / __ \  / __ \ / _ \  / /   / /           / /    / /
+ / /_/ / /  __/ / / / / / / / //  __/ / /   / /          _/ /    / /
+/_____/  \___/ /_/ /_/ /_/ /_/ \___/ /_/   /_/          /___/   /_/
+                     www.bennellit.com.au
                  Proxmox Post Install Script
 ${CL}"
 sleep 5
@@ -97,8 +101,9 @@ if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
 fi
 
 fristrun
+
 update
-		
+
 clear
 
 while [ 1 ]
