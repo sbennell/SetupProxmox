@@ -46,6 +46,7 @@ fristrun () {
 						  sed -i 's/^/#/' /etc/apt/sources.list.d/pbs-enterprise.list
 						fi
 				fi
+		fi
 }		
 
 update () {
