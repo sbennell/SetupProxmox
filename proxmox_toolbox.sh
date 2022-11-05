@@ -207,7 +207,7 @@ case $CHOICE in
 			echo "- sudo already installed"
 		fi
 		if [ $(dpkg-query -W -f='${Status}' libsasl2-modules 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-			apt-get install -y libsasl2-modules;.
+			apt-get install -y libsasl2-modules;
 		else
 			echo "- libsasl2-modules already installed"
 		fi
