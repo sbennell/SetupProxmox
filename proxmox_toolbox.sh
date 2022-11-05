@@ -35,8 +35,8 @@ fristrun () {
 						else
 						 echo "-- Hiding Enterprise sources list"
 						 sed -i 's/^/#/' /etc/apt/sources.list.d/pve-enterprise.list
-					   fi
-					else
+				fi
+				else
 					  echo "- Server is a PBS host"
 					  echo "- Checking Enterprise Source list"
 						if grep -Fq "#deb https://enterprise.proxmox.com/debian/pbs" /etc/apt/sources.list.d/pbs-enterprise.list; then
