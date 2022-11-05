@@ -111,12 +111,12 @@ while [ 1 ]
 do
 CHOICE=$(
 whiptail --title "Proxmox Post Install Script" --menu "Make your choice" 16 100 9 \
-	"1)" "Configure sources for no-enterprise repository"   \
+	"1)" "Configure sources for no-enterprise repository and Update"   \
 	"2)" "Add (Disabled) Beta/Test Repository" \
 	"3)" "Install usefull dependencies" \
 	"4)" "Add Bennell IT subscription Licence" \
 	"5)" "Add Bennell IT Logon Banner" \
-	"6)" "Add Bennell IT SSH Key <y/N>" \
+	"6)" "Add Bennell IT SSH Key" \
 	"7)" "Add and Enable Dark Mode" \
 	"8)" "setup SMTP" \
 	"9)" "Reboot Host" \
@@ -138,30 +138,36 @@ case $CHOICE in
 				echo "-- Adding new entry to sources.list"
 				sed -i "\$adeb http://download.proxmox.com/debian/pve $distribution pve-no-subscription" /etc/apt/sources.list
 			fi
-		echo "- Checking Enterprise Source list"
-		if grep -Fq "#deb https://enterprise.proxmox.com/debian/pve" /etc/apt/sources.list.d/pve-enterprise.list; then
-			echo "-- Entreprise repo looks already commented - Skipping"
+			echo "- Checking Enterprise Source list"
+			if grep -Fq "#deb https://enterprise.proxmox.com/debian/pve" /etc/apt/sources.list.d/pve-enterprise.list; then
+				echo "-- Entreprise repo looks already commented - Skipping"
+			else
+				echo "-- Hiding Enterprise sources list"
+				sed -i 's/^/#/' /etc/apt/sources.list.d/pve-enterprise.list
+			fi
 		else
-			echo "-- Hiding Enterprise sources list"
-			sed -i 's/^/#/' /etc/apt/sources.list.d/pve-enterprise.list
+			echo "- Server is a PBS host"
+			echo "- Checking Sources list"
+			if grep -Fq "deb http://download.proxmox.com/debian/pbs" /etc/apt/sources.list; then
+				echo "-- Source looks alredy configured - Skipping"
+			else
+				echo "-- Adding new entry to sources.list"
+				sed -i "\$adeb http://download.proxmox.com/debian/pbs $distribution pbs-no-subscription" /etc/apt/sources.list
+			fi
+			echo "- Checking Enterprise Source list"
+			if grep -Fq "#deb https://enterprise.proxmox.com/debian/pbs" /etc/apt/sources.list.d/pbs-enterprise.list; then
+				echo "-- Entreprise repo looks already commented - Skipping"
+			else
+				echo "-- Hiding Enterprise sources list"
+				sed -i 's/^/#/' /etc/apt/sources.list.d/pbs-enterprise.list
+			fi
 		fi
-		else
-		echo "- Server is a PBS host"
-		echo "- Checking Sources list"
-		if grep -Fq "deb http://download.proxmox.com/debian/pbs" /etc/apt/sources.list; then
-			echo "-- Source looks alredy configured - Skipping"
-		else
-			echo "-- Adding new entry to sources.list"
-			sed -i "\$adeb http://download.proxmox.com/debian/pbs $distribution pbs-no-subscription" /etc/apt/sources.list
-		fi
-		echo "- Checking Enterprise Source list"
-		if grep -Fq "#deb https://enterprise.proxmox.com/debian/pbs" /etc/apt/sources.list.d/pbs-enterprise.list; then
-			echo "-- Entreprise repo looks already commented - Skipping"
-		else
-			echo "-- Hiding Enterprise sources list"
-			sed -i 's/^/#/' /etc/apt/sources.list.d/pbs-enterprise.list
-		fi
-	fi
+		
+		echo "- Updating System"
+		apt-get update -y -qq
+		apt-get upgrade -y -qq
+		apt-get dist-upgrade -y -qq
+		
 		whiptail --msgbox "Disabled Enterprise Repository" 20 78
 	;;
 
@@ -266,7 +272,8 @@ case $CHOICE in
 	"7)")   
 		msg_info "Adding Dark Mode"
 		rm -f /usr/share/pve-patch/enable/PVEDiscordDark
-		wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin update
+		wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin uninstall
+		wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin install
 		echo true > /usr/share/pve-patch/enable/PVEDiscordDark
 		whiptail --msgbox "Enabled Dark Mode" 20 78
 	;;
