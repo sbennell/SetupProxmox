@@ -8,7 +8,7 @@
 # This command retreive the latest version of proxmox-toolbox and execute it with update argument
 
 proxmox-update() {
-wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/update.sh | bash /dev/stdin 
+wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/bin/update.sh | bash /dev/stdin 
 }
 
 proxmox-update
