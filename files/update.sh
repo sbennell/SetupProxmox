@@ -35,7 +35,7 @@ else
 fi
 
 echo "- Updating Dark Mode"
-if [ ! -f /usr/share/pve-patch/enable/darkmode ]; then
+if [ ! -f /usr/share/pve-patch/enable/PVEDiscordDark ]; then
   echo "- Dark Mode is not enabled"
 else
   wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin update
