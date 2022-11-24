@@ -281,7 +281,7 @@ case $CHOICE in
 		
 	"8)")   
 		msg_info "Running 365 SMTP Setup"
-		bash <(curl -s https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/scripts/smtp.sh ) install &>/
+		wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/scripts/smtp.sh | bash /dev/stdin
 		whiptail --msgbox "SMTP Setup Done" 20 78
 	;;
 
