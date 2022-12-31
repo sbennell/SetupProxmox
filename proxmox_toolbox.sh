@@ -93,13 +93,6 @@ function msg_ok() {
 header_info
 
 clear
-if [ `pveversion | grep "pve-manager/7" | wc -l` -ne 1 ]; then
-        echo -e "\n${RD}⚠ This version of Proxmox Virtual Environment is not supported"
-        echo -e "Requires PVE Version: 7.XX${CL}"
-        echo -e "\nExiting..."
-        sleep 3
-        exit
-fi
 
 fristrun
 
