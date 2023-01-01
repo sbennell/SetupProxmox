@@ -23,10 +23,10 @@ date=$(date +%Y_%m_%d-%H_%M_%S)
 
 fristrun () {
 		# Check if the /usr/bin/proxmox-update entry for update is already created
-		if [ ! -f /usr/share/pve-patch/fristrun ]; then
-		mkdir -p /usr/share/pve-patch
-		mkdir -p /usr/share/pve-patch/enable
-		echo true > /usr/share/pve-patch/fristrun
+		if [ ! -f /usr/share/proxmox-patch/fristrun ]; then
+		mkdir -p /usr/share/proxmox-patch
+		mkdir -p /usr/share/proxmox-patch/enable
+		echo true > /usr/share/proxmox-patch/fristrun
 				if [ -d "$pve_log_folder" ]; then
 					  echo "- Server is a PVE host"
 					  echo "- Checking Enterprise Source list"
@@ -239,19 +239,31 @@ case $CHOICE in
 		    sed -i "\$a127.0.0.1 shop.maurer-it.com $distribution pbstest" /etc/hosts
 		fi
 				
-		echo true > /usr/share/pve-patch/enable/BITsubscription
+		echo true > /usr/share/proxmox-patch/enable/BITsubscription
 
 		whiptail --msgbox "Added Bennell IT subscription Licence" 20 78
 	;;
 
 	"5)")   
 		msg_info "Adding Bennell IT Logon Banner"
-		rm -f /usr/share/pve-patch/enable/PVEDiscordDark
-		rm /usr/bin/pvebanner
-		wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/pve-patch/master/files/pvebanner 
-		chmod +x /usr/bin/pvebanner
-		/usr/bin/pvebanner
-		echo true > /usr/share/pve-patch/enable/pvebanner
+		if [ -d "$pve_log_folder" ]; then
+			echo "- Server is a PVE host"
+			rm -f /usr/share/proxmox-patch/enable/pvebanner
+			rm /usr/bin/pvebanner
+			wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/proxmox-patch/master/files/pvebanner 
+			chmod +x /usr/bin/pvebanner
+			/usr/bin/pvebanner
+			echo true > /usr/share/proxmox-patch/enable/pvebanner
+		else
+			echo "- Server is a PBS host"
+			rm -f /usr/share/proxmox-patch/enable/pbsbanner
+			rm /usr/bin/pvebanner
+			wget -qP /usr/bin/ -o pvebanner https://raw.githubusercontent.com/sbennell/proxmox-patch/master/files/pbsbanner 
+			chmod +x /usr/bin/pvebanner
+			/usr/bin/pvebanner
+			echo true > /usr/share/proxmox-patch/enable/pbsbanner
+		fi
+
 		whiptail --msgbox "Added Bennell IT Logon Banner" 20 78
 	;;
 		
@@ -266,9 +278,18 @@ case $CHOICE in
 
 	"7)")   
 		msg_info "Adding Dark Mode"
-		rm -f /usr/share/pve-patch/enable/PVEDiscordDark
-		wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin install
-		echo true > /usr/share/pve-patch/enable/PVEDiscordDark
+		if [ -d "$pve_log_folder" ]; then
+			echo "- Server is a PVE host"
+			rm -f /usr/share/proxmox-patch/enable/PVEDiscordDark
+			wget -qO - https://raw.githubusercontent.com/sbennell/ProxmoxDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin install
+			echo true > /usr/share/proxmox-patch/enable/PVEDiscordDark
+		else
+			echo "- Server is a PBS host"
+			rm -f /usr/share/proxmox-patch/enable/PBSDiscordDark
+			wget -qO - https://raw.githubusercontent.com/sbennell/ProxmoxDiscordDark/master/PBSDiscordDark.sh | bash /dev/stdin install
+			echo true > /usr/share/proxmox-patch/enable/PBSDiscordDark
+		fi
+
 		whiptail --msgbox "Enabled Dark Mode" 20 78
 	;;
 		

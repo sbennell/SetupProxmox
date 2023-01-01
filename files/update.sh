@@ -1,20 +1,14 @@
+# -----------------ENVIRONNEMENT VARIABLES----------------------
+pve_log_folder="/var/log/pve/tasks/"
+# ---------------END OF ENVIRONNEMENT VARIABLES-----------------
+
 echo "- Updating System"
 apt-get update -y -qq
 apt-get upgrade -y -qq
 apt-get dist-upgrade -y -qq
 
-echo "- Updating pvebanner"
-if [ ! -f /usr/share/pve-patch/enable/pvebanner ]; then
-  echo "- pvebanner is not enabled"
-else
-  rm /usr/bin/pvebanner
-  wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/pve-patch/master/files/pvebanner 
-  chmod +x /usr/bin/pvebanner
-  /usr/bin/pvebanner
-fi
-
 echo "- Updating Bennell IT subscription Licence"
-if [ ! -f /usr/share/pve-patch/enable/BITsubscription ]; then
+if [ ! -f /usr/share/proxmox-patch/enable/BITsubscription ]; then
   echo "- Bennell IT subscription Licence is not enabled"
 else
   apt purge pve-bit-subscription -y -qq
@@ -34,9 +28,41 @@ else
   fi
 fi
 
-echo "- Updating Dark Mode"
-if [ ! -f /usr/share/pve-patch/enable/PVEDiscordDark ]; then
-  echo "- Dark Mode is not enabled"
+
+if [ -d "$pve_log_folder" ]; then
+  echo "- Updating pvebanner"
+  if [ ! -f /usr/share/proxmox-patch/enable/pvebanner ]; then
+    echo "- pvebanner is not enabled"
+  else
+    rm /usr/bin/pvebanner
+    wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/proxmox-patch/master/files/pvebanner 
+    chmod +x /usr/bin/pvebanner
+    /usr/bin/pvebanner
+  fi
+
+  echo "- Updating Dark Mode"
+  if [ ! -f /usr/share/proxmox-patch/enable/PVEDiscordDark ]; then
+    echo "- Dark Mode is not enabled"
+  else
+    wget -qO - https://raw.githubusercontent.com/sbennell/ProxmoxDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin update
+  fi
+
 else
-  wget -qO - https://raw.githubusercontent.com/sbennell/PVEDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin update
+  echo "- Server is a PBS host"
+  echo "- Updating pvebanner"
+  if [ ! -f /usr/share/proxmox-patch/enable/pbsbanner ]; then
+    echo "- pvebanner is not enabled"
+  else
+    rm /usr/bin/pvebanner
+    wget -qP /usr/bin/ -o pvebanner https://raw.githubusercontent.com/sbennell/proxmox-patch/master/files/pbsbanner 
+    chmod +x /usr/bin/pvebanner
+    /usr/bin/pvebanner
+  fi
+
+  echo "- Updating Dark Mode"
+  if [ ! -f /usr/share/proxmox-patch/enable/PBSDiscordDark ]; then
+    echo "- Dark Mode is not enabled"
+  else
+    wget -qO - https://raw.githubusercontent.com/sbennell/ProxmoxDiscordDark/master/PBSDiscordDark.sh | bash /dev/stdin update
+  fi
 fi
