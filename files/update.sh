@@ -35,7 +35,7 @@ if [ -d "$pve_log_folder" ]; then
     echo "- pvebanner is not enabled"
   else
     rm /usr/bin/pvebanner
-    wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/proxmox-patch/master/files/pvebanner 
+    wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/files/pvebanner 
     chmod +x /usr/bin/pvebanner
     /usr/bin/pvebanner
   fi
@@ -54,7 +54,7 @@ else
     echo "- pvebanner is not enabled"
   else
     rm /usr/bin/pvebanner
-    wget -qP /usr/bin/ -o pvebanner https://raw.githubusercontent.com/sbennell/proxmox-patch/master/files/pbsbanner 
+    wget -qP /usr/bin/ -o pvebanner https://raw.githubusercontent.com/sbennell/SetupProxmox/master/files/pbsbanner 
     chmod +x /usr/bin/pvebanner
     /usr/bin/pvebanner
   fi

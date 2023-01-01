@@ -250,7 +250,7 @@ case $CHOICE in
 			echo "- Server is a PVE host"
 			rm -f /usr/share/proxmox-patch/enable/pvebanner
 			rm /usr/bin/pvebanner
-			wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/proxmox-patch/master/files/pvebanner 
+			wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/pvebanner 
 			chmod +x /usr/bin/pvebanner
 			/usr/bin/pvebanner
 			echo true > /usr/share/proxmox-patch/enable/pvebanner
@@ -258,7 +258,7 @@ case $CHOICE in
 			echo "- Server is a PBS host"
 			rm -f /usr/share/proxmox-patch/enable/pbsbanner
 			rm /usr/bin/pvebanner
-			wget -qP /usr/bin/ -o pvebanner https://raw.githubusercontent.com/sbennell/proxmox-patch/master/files/pbsbanner 
+			wget -qO /usr/bin/pvebanner https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/pbsbanner
 			chmod +x /usr/bin/pvebanner
 			/usr/bin/pvebanner
 			echo true > /usr/share/proxmox-patch/enable/pbsbanner
