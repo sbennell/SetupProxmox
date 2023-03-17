@@ -257,10 +257,10 @@ case $CHOICE in
 		else
 			echo "- Server is a PBS host"
 			rm -f /usr/share/proxmox-patch/enable/pbsbanner
-			rm /usr/bin/pvebanner
-			wget -qO /usr/bin/pvebanner https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/pbsbanner
-			chmod +x /usr/bin/pvebanner
-			/usr/bin/pvebanner
+			rm /usr/bin/pbsbanner
+			wget -qO /usr/bin/pbsbanner https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/pbsbanner
+			chmod +x /usr/bin/pbsbanner
+			/usr/bin/pbsbanner
 			echo true > /usr/share/proxmox-patch/enable/pbsbanner
 		fi
 
@@ -286,7 +286,7 @@ case $CHOICE in
 		else
 			echo "- Server is a PBS host"
 			rm -f /usr/share/proxmox-patch/enable/PBSDiscordDark
-			wget -qO - https://raw.githubusercontent.com/sbennell/ProxmoxDiscordDark/master/PBSDiscordDark.sh | bash /dev/stdin install
+			wget -qO - https://raw.githubusercontent.com/Luckyvb/PBSDiscordDark/master/PBSDiscordDark.sh | bash /dev/stdin install
 			echo true > /usr/share/proxmox-patch/enable/PBSDiscordDark
 		fi
 
