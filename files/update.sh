@@ -49,16 +49,6 @@ if [ -d "$pve_log_folder" ]; then
 
 else
   echo "- Server is a PBS host"
-  echo "- Updating pvebanner"
-  if [ ! -f /usr/share/proxmox-patch/enable/pbsbanner ]; then
-    echo "- pvebanner is not enabled"
-  else
-    rm /usr/bin/pvebanner
-    wget -qP /usr/bin/ -o pvebanner https://raw.githubusercontent.com/sbennell/SetupProxmox/master/files/pbsbanner 
-    chmod +x /usr/bin/pvebanner
-    /usr/bin/pvebanner
-  fi
-
   echo "- Updating Dark Mode"
   if [ ! -f /usr/share/proxmox-patch/enable/PBSDiscordDark ]; then
     echo "- Dark Mode is not enabled"
