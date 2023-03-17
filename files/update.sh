@@ -53,6 +53,6 @@ else
   if [ ! -f /usr/share/proxmox-patch/enable/PBSDiscordDark ]; then
     echo "- Dark Mode is not enabled"
   else
-    wget -qO - https://raw.githubusercontent.com/Luckyvb/PBSDiscordDark/master/PBSDiscordDark.sh | bash /dev/stdin i update
+    wget -qO - https://raw.githubusercontent.com/Luckyvb/PBSDiscordDark/master/PBSDiscordDark.sh | bash /dev/stdin update
   fi
 fi
