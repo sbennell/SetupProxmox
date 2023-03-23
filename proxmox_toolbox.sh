@@ -110,9 +110,8 @@ whiptail --title "Proxmox Post Install Script" --menu "Make your choice" 16 100 
 	"4)" "Add Bennell IT subscription Licence" \
 	"5)" "Add Bennell IT Logon Banner (PVE ONLY)" \
 	"6)" "Add Bennell IT SSH Key" \
-	"7)" "Add and Enable Dark Mode" \
-	"8)" "setup SMTP" \
-	"9)" "Reboot Host" \
+	"7)" "setup SMTP" \
+	"8)" "Reboot Host" \
 	"E)" "Exit"  3>&2 2>&1 1>&3	
 )
 
@@ -277,29 +276,12 @@ case $CHOICE in
 	;;
 
 	"7)")   
-		msg_info "Adding Dark Mode"
-		if [ -d "$pve_log_folder" ]; then
-			echo "- Server is a PVE host"
-			rm -f /usr/share/proxmox-patch/enable/PVEDiscordDark
-			wget -qO - https://raw.githubusercontent.com/sbennell/ProxmoxDiscordDark/master/PVEDiscordDark.sh | bash /dev/stdin install
-			echo true > /usr/share/proxmox-patch/enable/PVEDiscordDark
-		else
-			echo "- Server is a PBS host"
-			rm -f /usr/share/proxmox-patch/enable/PBSDiscordDark
-			wget -qO - https://raw.githubusercontent.com/Luckyvb/PBSDiscordDark/master/PBSDiscordDark.sh | bash /dev/stdin install
-			echo true > /usr/share/proxmox-patch/enable/PBSDiscordDark
-		fi
-
-		whiptail --msgbox "Enabled Dark Mode" 20 78
-	;;
-		
-	"8)")   
 		msg_info "Running 365 SMTP Setup"
 		wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/scripts/smtp.sh | bash /dev/stdin
 		whiptail --msgbox "SMTP Setup Done" 20 78
 	;;
 
-	"9)")   
+	"8)")   
 		msg_info "Rebooting Server"
 		reboot
 	;;
