@@ -254,13 +254,7 @@ case $CHOICE in
 			/usr/bin/pvebanner
 			echo true > /usr/share/proxmox-patch/enable/pvebanner
 		else
-			#echo "- Server is a PBS host"
-			#rm -f /usr/share/proxmox-patch/enable/pbsbanner
-			#rm /usr/bin/pbsbanner
-			#wget -qO /usr/bin/pbsbanner https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/pbsbanner
-			#chmod +x /usr/bin/pbsbanner
-			#/usr/bin/pbsbanner
-			#echo true > /usr/share/proxmox-patch/enable/pbsbanner
+			echo "- Server is a PBS host"
 		fi
 
 		whiptail --msgbox "Added Bennell IT Logon Banner" 20 78
