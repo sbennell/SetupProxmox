@@ -235,7 +235,7 @@ case $CHOICE in
 		    echo "-- Check for shop.maurer-it.com block looks alredy configured - Skipping"
 		else
 		    echo "-- Blocking shop.maurer-it.com "
-		    sed -i "\$a127.0.0.1 shop.maurer-it.com $distribution pbstest" /etc/hosts
+		    sed -i "\$a127.0.0.1 shop.maurer-it.com" /etc/hosts
 		fi
 				
 		echo true > /usr/share/proxmox-patch/enable/BITsubscription
