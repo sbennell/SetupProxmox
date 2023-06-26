@@ -41,7 +41,7 @@ fristrun () {
 						else
 						 echo "-- Hiding ceph Enterprise sources list"
 						 sed -i 's/^/#/' /etc/apt/sources.list.d/ceph.list
-				fi
+						fi
 				else
 					  echo "- Server is a PBS host"
 					  echo "- Checking Enterprise Source list"
