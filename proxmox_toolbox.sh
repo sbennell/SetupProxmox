@@ -35,6 +35,11 @@ fristrun () {
 						else
 						 echo "-- Hiding Enterprise sources list"
 						 sed -i 's/^/#/' /etc/apt/sources.list.d/pve-enterprise.list
+       						if grep -Fq "#deb https://enterprise.proxmox.com/debian/ceph-quincy" /etc/apt/sources.list.d/ceph.list; then
+						 echo "-- Entreprise repo looks already commented - Skipping"
+						else
+						 echo "-- Hiding ceph Enterprise sources list"
+						 sed -i 's/^/#/' /etc/apt/sources.list.d/ceph.list
 				fi
 				else
 					  echo "- Server is a PBS host"
