@@ -136,6 +136,12 @@ case $CHOICE in
 				echo "-- Adding new entry to sources.list"
 				sed -i "\$adeb http://download.proxmox.com/debian/pve $distribution pve-no-subscription" /etc/apt/sources.list
 			fi
+   			if grep -Fq "deb http://ftp.debian.org/debian/" /etc/apt/sources.list; then
+				echo "-- non-free-firmware looks alredy configured - Skipping"
+			else
+				echo "-- Adding new entry to sources.list"
+				sed -i "\$adeb http://ftp.debian.org/debian $distribution main contrib non-free-firmware" /etc/apt/sources.list
+			fi
 			echo "- Checking Enterprise Source list"
 			if grep -Fq "#deb https://enterprise.proxmox.com/debian/pve" /etc/apt/sources.list.d/pve-enterprise.list; then
 				echo "-- Entreprise repo looks already commented - Skipping"
