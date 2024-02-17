@@ -1,6 +1,6 @@
 # SetupProxmox
 
-Removes subscription dialogs, replaces enterprise repository with non-subscription repository, apt Update and apt upgrade system, Add Benenell IT SSh Key and Configure Postfix to use Office365 SMTP Relay. For PVE 7.x Tested on PVE 7.2-11
+Removes subscription dialogs, replaces enterprise repository with non-subscription repository, apt Update and apt upgrade system, Add Benenell IT SSh Key and Configure Postfix to use Office365 SMTP Relay. For PVE 7.x Tested on PVE 7.2-11 - 7.3-3
 
 
 Use at your own risk! Read the script before you run it. 
@@ -10,10 +10,7 @@ Use at your own risk! Read the script before you run it.
 1. Connect to node via SSH
 2. Run
 ```
-wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh -c -O patch.sh && bash patch.sh  && rm patch.sh 
-```
-```
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/post-install.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/proxmox_toolbox.sh)"
 ```
 
 ## Other Scripts
