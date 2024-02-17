@@ -59,7 +59,7 @@ update () {
 		# Check if the /usr/bin/proxmox-update entry for update is already created
 		if [ ! -f /usr/bin/proxmox-update ]; then
 			echo "- Retreiving new bin"
-			wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
+			wget -qO "/usr/bin/proxmox-update"  https://raw.githubusercontent.com/sbennell/SetupProxmox/master/files/proxmox-update && chmod +x "/usr/bin/proxmox-update"
 			update
 		else
 		echo "- Updating System"
