@@ -13,6 +13,9 @@ Use at your own risk! Read the script before you run it.
 bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/proxmox_toolbox.sh)"
 ```
 
+## Install intel Microcode 
+apt install intel-microcode
+
 ## Other Scripts
 
 Proxmox CPU Scaling Governor
