@@ -261,7 +261,7 @@ case $CHOICE in
 			echo "- Server is a PVE host"
 			rm -f /usr/share/proxmox-patch/enable/pvebanner
 			rm /usr/bin/pvebanner
-			wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/files/pvebanner 
+			wget -qP /usr/bin/ https://raw.githubusercontent.com/sbennell/SetupProxmox/master/files/pvebanner 
 			chmod +x /usr/bin/pvebanner
 			/usr/bin/pvebanner
 			echo true > /usr/share/proxmox-patch/enable/pvebanner
@@ -283,7 +283,7 @@ case $CHOICE in
 
 	"7)")   
 		msg_info "Running 365 SMTP Setup"
-		wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/Testing/scripts/smtp.sh | bash /dev/stdin
+		wget -qO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/scripts/smtp.sh | bash /dev/stdin
 		whiptail --msgbox "SMTP Setup Done" 20 78
 	;;
 
