@@ -571,7 +571,7 @@ show_setup_guide() {
 For detailed step-by-step instructions, best practices, and additional configuration options, visit our comprehensive setup guide:
 
 🔗 GitHub Repository:
-https://github.com/sbennell/SetupProxmox/blob/master/Docs/Proxmox%20VE%209%20Setup%20Guide
+https://tinyurl.com/ymwf48z2
 
 This guide covers:
 • Pre-installation planning
