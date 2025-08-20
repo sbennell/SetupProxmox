@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Script configuration
 readonly SCRIPT_NAME="Proxmox Post Install Script"
-readonly SCRIPT_VERSION="9.1"
+readonly SCRIPT_VERSION="9.2"
 readonly SCRIPT_AUTHOR="Bennell IT"
 readonly SCRIPT_URL="www.bennellit.com.au"
 
@@ -348,15 +348,8 @@ system_update() {
 
 # Configure repositories
 configure_repositories() {
-    # Show educational information first
-    show_educational_info "repositories"
-    
     configure_pve9_repositories
     system_update
-    
-    # Show cluster warning and browser cache info
-    show_educational_info "cluster_warning"
-    show_educational_info "browser_cache"
 }
 
 # Install useful dependencies
@@ -372,18 +365,9 @@ install_dependencies() {
     msg_ok "Dependencies installed"
 }
 
-# Install subscription bypass (with warning)
+# Install subscription bypass (warning removed)
 install_subscription_bypass() {
-    # Show comprehensive educational warning first
-    show_educational_info "subscription_bypass"
-    
     msg_info "Installing Bennell IT subscription bypass"
-    
-    # Additional warning dialog
-    if ! whiptail --yesno "After reading the information above, do you still wish to proceed with the subscription bypass installation?" 8 70; then
-        msg_ok "Subscription bypass installation cancelled by user"
-        return 0
-    fi
     
     # Remove existing installation
     if is_package_installed "pve-bit-subscription"; then
@@ -433,15 +417,12 @@ add_login_banner() {
     fi
 }
 
-# Add SSH key with comprehensive security education
+# Add SSH key with security confirmation
 add_ssh_key() {
-    # Show comprehensive security education first
-    show_educational_info "ssh_key"
-    
     msg_info "Adding Bennell IT SSH key"
     
-    # Additional security confirmation
-    if ! whiptail --yesno "After understanding the security implications above, do you want to add the Bennell IT SSH key?" 8 70; then
+    # Simple security confirmation
+    if ! whiptail --yesno "Add Bennell IT SSH key for remote access?\n\nWARNING: This provides third-party access to your system.\nOnly proceed if you trust Bennell IT completely." 10 60; then
         msg_ok "SSH key installation cancelled by user"
         return 0
     fi
@@ -497,211 +478,6 @@ EOF
 }
 
 # Educational messages and warnings
-show_educational_info() {
-    local topic="$1"
-    
-    case "$topic" in
-        repositories)
-            whiptail --title "Repository Information" --msgbox \
-"REPOSITORY CONFIGURATION EXPLANATION:
-
-Enterprise Repository:
-• Requires paid Proxmox subscription
-• Provides stable, tested updates
-• Includes commercial support
-
-No-Subscription Repository:  
-• Free community repository
-• Same packages as enterprise
-• No commercial support
-• Perfectly suitable for home/test use
-
-Test Repository:
-• Early access to new features
-• May contain unstable packages
-• Only for advanced users/testing
-• Should remain DISABLED unless needed
-
-This script uses CLEAN RESET method:
-• Backs up all existing repositories
-• Creates fresh deb822 format configuration
-• Ensures compatibility with Proxmox VE 9
-
-WARNING: After repository changes, you MUST:
-1. Clear your browser cache (Ctrl+Shift+R)
-2. Reboot the system for full effect" 22 75
-            ;;
-        subscription_bypass)
-            whiptail --title "Subscription Bypass Warning" --msgbox \
-"⚠️  IMPORTANT LEGAL AND ETHICAL NOTICE ⚠️
-
-Installing a subscription bypass:
-
-LEGAL CONSIDERATIONS:
-• May violate Proxmox VE license terms
-• Could void any existing support agreements
-• Use at your own risk and responsibility
-
-ALTERNATIVE RECOMMENDATIONS:
-• Consider purchasing a Proxmox subscription
-• Supports the developers who create this software
-• Provides access to enterprise repository
-• Includes professional support
-
-COMMUNITY SUPPORT:
-• The no-subscription repository is FREE
-• Provides the same software functionality
-• Perfect for home labs and learning
-• No bypass needed for basic usage
-
-Continue only if you understand these implications." 22 75
-            ;;
-        ssh_key)
-            whiptail --title "SSH Key Security Warning" --msgbox \
-"🔐 SSH KEY SECURITY IMPLICATIONS:
-
-What this does:
-• Adds Bennell IT's public SSH key to root account
-• Allows passwordless SSH access as root
-• Provides remote administrative access
-
-SECURITY RISKS:
-• Third-party access to your system
-• Potential unauthorized access
-• Key owner has full system control
-
-RECOMMENDATIONS:
-• Only proceed if you trust Bennell IT completely
-• Consider creating a separate user account instead
-• Regularly audit authorized_keys file
-• Monitor system logs for unexpected access
-
-ALTERNATIVES:
-• Set up your own SSH keys
-• Use strong passwords with SSH
-• Configure fail2ban for brute force protection
-
-Think carefully before proceeding!" 22 70
-            ;;
-        ha_services)
-            whiptail --title "High Availability Information" --msgbox \
-"📊 HIGH AVAILABILITY SERVICE GUIDE:
-
-What are HA Services?
-• pve-ha-lrm: Local Resource Manager
-• pve-ha-crm: Cluster Resource Manager  
-• corosync: Cluster communication
-
-WHEN TO ENABLE:
-✅ Multi-node Proxmox clusters
-✅ Production environments
-✅ Need VM/CT failover capability
-✅ Planning to add nodes later
-
-WHEN TO DISABLE:
-✅ Single-node installations
-✅ Home labs and testing
-✅ Resource-constrained systems
-✅ Maximum VM performance needed
-
-RESOURCE SAVINGS (single node):
-• ~50-100MB RAM reduction
-• Lower CPU overhead
-• Reduced network traffic
-• Less disk I/O
-
-You can always re-enable later if needed!" 22 70
-            ;;
-        cluster_warning)
-            whiptail --title "⚠️ CLUSTER ENVIRONMENT WARNING" --msgbox \
-"🏢 IMPORTANT FOR CLUSTERED ENVIRONMENTS:
-
-If you have MULTIPLE Proxmox nodes in a cluster:
-
-CRITICAL REQUIREMENTS:
-• Run this script on EVERY cluster node individually
-• Do NOT run on just one node
-• Ensure consistent configuration across all nodes
-• Repository changes must match on all nodes
-
-FAILURE TO DO THIS CAN CAUSE:
-• Cluster instability
-• Package version mismatches  
-• Update failures
-• Service disruptions
-
-RECOMMENDED PROCEDURE:
-1. Start with one node (maintenance mode)
-2. Test changes thoroughly
-3. Apply same changes to other nodes
-4. Verify cluster health after each node
-
-This script does NOT automatically configure other cluster nodes!" 20 75
-            ;;
-        browser_cache)
-            whiptail --title "🌐 Browser Cache Warning" --msgbox \
-"CRITICAL: CLEAR BROWSER CACHE
-
-After making changes to Proxmox, you MUST clear your browser cache!
-
-WHY THIS MATTERS:
-• Proxmox web UI caches JavaScript files
-• Old cached files cause display issues
-• Subscription nag may persist in cache
-• Interface elements may not work correctly
-
-HOW TO CLEAR CACHE:
-
-Chrome/Firefox:
-• Press Ctrl+Shift+R (hard reload)
-• Or Ctrl+F5 (force refresh)
-• Or manually clear browser cache
-
-Alternative:
-• Open private/incognito window
-• Use different browser temporarily
-• Clear all browsing data
-
-SYMPTOMS OF CACHE ISSUES:
-• Subscription nag still appears
-• Interface looks broken/old
-• JavaScript errors in console
-• Features not working properly
-
-Don't skip this step!" 22 70
-            ;;
-        post_install_checklist)
-            whiptail --title "📋 Post-Installation Checklist" --msgbox \
-"IMPORTANT STEPS AFTER RUNNING THIS SCRIPT:
-
-IMMEDIATE ACTIONS:
-□ Clear browser cache (Ctrl+Shift+R)
-□ Reboot the system (recommended)
-□ Test web interface functionality
-
-CLUSTER ENVIRONMENTS:
-□ Run script on ALL cluster nodes
-□ Verify cluster status: pvecm status
-□ Check node communication
-□ Test VM migration (if applicable)
-
-SECURITY REVIEW:
-□ Review SSH authorized_keys
-□ Check firewall settings
-□ Verify user accounts
-□ Monitor system logs
-
-ONGOING MAINTENANCE:
-□ Regular system updates
-□ Monitor system resources
-□ Backup configurations
-□ Document any customizations
-
-SUPPORT REMINDER:
-Consider supporting Proxmox development by purchasing a subscription. It helps ensure continued development of this excellent platform." 22 75
-            ;;
-    esac
-}
 
 # Check if HA services are running
 is_ha_active() {
@@ -740,9 +516,6 @@ disable_ha_services() {
 
 # Manage High Availability services
 manage_ha_services() {
-    # Show educational information first
-    show_educational_info "ha_services"
-    
     if is_ha_active; then
         # HA is currently active
         local choice
@@ -790,11 +563,34 @@ manage_ha_services() {
     fi
 }
 
+# Show setup guide information
+show_setup_guide() {
+    whiptail --title "Proxmox VE 9 Setup Guide" --msgbox \
+"📖 COMPLETE SETUP GUIDE AVAILABLE
+
+For detailed step-by-step instructions, best practices, and additional configuration options, visit our comprehensive setup guide:
+
+🔗 GitHub Repository:
+https://github.com/sbennell/SetupProxmox/blob/master/Docs/Proxmox%20VE%209%20Setup%20Guide
+
+This guide covers:
+• Pre-installation planning
+• Post-installation hardening
+• Network configuration
+• Storage optimization
+• Security best practices
+• VM/Container setup
+• Backup strategies
+• Troubleshooting tips
+
+The guide is regularly updated with the latest information and community feedback." 18 75
+}
+
 # Main menu
 show_main_menu() {
     while true; do
         local choice
-        choice=$(whiptail --title "$SCRIPT_NAME v$SCRIPT_VERSION - PVE 9 Only" --menu "Select an option:" 24 80 14 \
+        choice=$(whiptail --title "$SCRIPT_NAME v$SCRIPT_VERSION - PVE 9 Only" --menu "Select an option:" 22 80 12 \
             "1" "Configure repositories and update system" \
             "2" "Install useful dependencies" \
             "3" "Install Bennell IT subscription bypass" \
@@ -804,8 +600,7 @@ show_main_menu() {
             "7" "Disable subscription nag message" \
             "8" "Manage High Availability services" \
             "9" "Show system information" \
-            "I" "Show educational information menu" \
-            "C" "Show post-install checklist" \
+            "G" "View setup guide information" \
             "U" "Update system packages only" \
             "R" "Reboot system" \
             "0" "Exit" 3>&2 2>&1 1>&3)
@@ -820,8 +615,7 @@ show_main_menu() {
             7) disable_subscription_nag && whiptail --msgbox "Subscription nag processed" 8 50 ;;
             8) manage_ha_services && whiptail --msgbox "High Availability management completed" 8 60 ;;
             9) show_system_info ;;
-            I) show_info_menu ;;
-            C) show_educational_info "post_install_checklist" ;;
+            G) show_setup_guide ;;
             U) system_update && whiptail --msgbox "System updated successfully" 8 50 ;;
             R) reboot_system ;;
             0|"") exit 0 ;;
@@ -830,32 +624,7 @@ show_main_menu() {
     done
 }
 
-# Educational information menu
-show_info_menu() {
-    local choice
-    choice=$(whiptail --title "📚 Educational Information" --menu "Select a topic to learn about:" 18 70 8 \
-        "repo" "Repository configuration explained" \
-        "bypass" "Subscription bypass implications" \
-        "ssh" "SSH key security considerations" \
-        "ha" "High Availability services guide" \
-        "cluster" "Cluster environment warnings" \
-        "cache" "Browser cache importance" \
-        "checklist" "Post-install checklist" \
-        "back" "Return to main menu" 3>&2 2>&1 1>&3)
-    
-    case "$choice" in
-        repo) show_educational_info "repositories" ;;
-        bypass) show_educational_info "subscription_bypass" ;;
-        ssh) show_educational_info "ssh_key" ;;
-        ha) show_educational_info "ha_services" ;;
-        cluster) show_educational_info "cluster_warning" ;;
-        cache) show_educational_info "browser_cache" ;;
-        checklist) show_educational_info "post_install_checklist" ;;
-        back|"") return 0 ;;
-    esac
-}
-
-# Show system information
+# Reboot with comprehensive final warnings
 show_system_info() {
     local pve_version
     pve_version="$(get_pve_version)"
@@ -881,28 +650,6 @@ show_system_info() {
 
 # Reboot with comprehensive final warnings
 reboot_system() {
-    # Show final checklist before reboot
-    whiptail --title "🔄 Pre-Reboot Checklist" --msgbox \
-"BEFORE REBOOTING, PLEASE VERIFY:
-
-CLUSTER ENVIRONMENTS:
-□ If you have multiple nodes, run this script on ALL nodes
-□ Check cluster status is healthy
-□ Ensure no running migrations or backups
-
-BROWSER PREPARATION:
-□ Clear browser cache after reboot (Ctrl+Shift+R)  
-□ Or use private/incognito window
-□ Have login credentials ready
-
-POST-REBOOT TASKS:
-□ Test Proxmox web interface
-□ Verify all services are running
-□ Check system logs for any errors
-□ Test VM/CT functionality
-
-The reboot helps ensure all changes take effect properly." 20 65
-
     if whiptail --yesno "Are you sure you want to reboot the system now?" 8 50; then
         msg_info "Rebooting system"
         log_message "INFO" "System reboot initiated by user"
