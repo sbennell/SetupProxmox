@@ -599,6 +599,23 @@ setup_smtp() {
     fi
 }
 
+# Disable subscription nag message
+disable_subscription_nag() {
+    if whiptail --yesno "Disable subscription nag message?" 8 60; then
+        whiptail --msgbox "Supporting the software's development team is essential. Check their official website's Support Subscriptions for pricing." 8 60
+        
+        msg_info "Disabling subscription nag"
+        cat > /etc/apt/apt.conf.d/no-nag-script << 'EOF'
+DPkg::Post-Invoke { "if [ -s /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js ] && ! grep -q -F 'NoMoreNagging' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js; then echo 'Removing subscription nag from UI...'; sed -i '/data\.status/{s/\\!//;s/active/NoMoreNagging/}' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js; fi" };
+EOF
+        
+        # Reinstall widget toolkit to apply changes
+        apt --reinstall install proxmox-widget-toolkit &>/dev/null || true
+        
+        msg_ok "Disabled subscription nag (Clear browser cache)"
+    fi
+}
+
 # Educational messages and warnings
 show_educational_info() {
     local topic="$1"
@@ -799,20 +816,6 @@ SUPPORT REMINDER:
 Consider supporting Proxmox development by purchasing a subscription. It helps ensure continued development of this excellent platform." 22 75
             ;;
     esac
-}
-    if whiptail --yesno "Disable subscription nag message?" 8 60; then
-        whiptail --msgbox "Supporting the software's development team is essential. Check their official website's Support Subscriptions for pricing." 8 60
-        
-        msg_info "Disabling subscription nag"
-        cat > /etc/apt/apt.conf.d/no-nag-script << 'EOF'
-DPkg::Post-Invoke { "if [ -s /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js ] && ! grep -q -F 'NoMoreNagging' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js; then echo 'Removing subscription nag from UI...'; sed -i '/data\.status/{s/\\!//;s/active/NoMoreNagging/}' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js; fi" };
-EOF
-        
-        # Reinstall widget toolkit to apply changes
-        apt --reinstall install proxmox-widget-toolkit &>/dev/null || true
-        
-        msg_ok "Disabled subscription nag (Clear browser cache)"
-    fi
 }
 
 # Check if HA services are running
