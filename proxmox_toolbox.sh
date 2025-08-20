@@ -268,9 +268,90 @@ EOF
     fi
 }
 
+# Disable enterprise repositories in deb822 sources
+disable_enterprise_repositories() {
+    local sources_disabled=false
+    
+    # Find and disable Ceph enterprise repositories
+    for file in /etc/apt/sources.list.d/*.sources; do
+        [[ ! -f "$file" ]] && continue
+        
+        if grep -q "enterprise.proxmox.com/debian/ceph" "$file" 2>/dev/null; then
+            backup_file "$file"
+            # Comment out entire repository blocks containing enterprise Ceph repos
+            awk '
+            /^Types:/ { in_block = 1; block = $0 "\n"; next }
+            in_block && /^$/ { 
+                if (block ~ /enterprise\.proxmox\.com\/debian\/ceph/) {
+                    gsub(/^/, "# ", block)
+                    print "# " block
+                } else {
+                    printf "%s", block
+                }
+                print ""
+                in_block = 0
+                block = ""
+                next
+            }
+            in_block { block = block $0 "\n"; next }
+            { print }
+            END {
+                if (in_block && block ~ /enterprise\.proxmox\.com\/debian\/ceph/) {
+                    gsub(/^/, "# ", block)
+                    printf "# %s", block
+                } else if (in_block) {
+                    printf "%s", block
+                }
+            }
+            ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+            sources_disabled=true
+            log_message "INFO" "Disabled enterprise Ceph repository in $file"
+        fi
+        
+        # Also handle PVE enterprise repositories
+        if grep -q "enterprise.proxmox.com/debian/pve" "$file" 2>/dev/null; then
+            backup_file "$file"
+            awk '
+            /^Types:/ { in_block = 1; block = $0 "\n"; next }
+            in_block && /^$/ { 
+                if (block ~ /enterprise\.proxmox\.com\/debian\/pve/) {
+                    gsub(/^/, "# ", block)
+                    print "# " block
+                } else {
+                    printf "%s", block
+                }
+                print ""
+                in_block = 0
+                block = ""
+                next
+            }
+            in_block { block = block $0 "\n"; next }
+            { print }
+            END {
+                if (in_block && block ~ /enterprise\.proxmox\.com\/debian\/pve/) {
+                    gsub(/^/, "# ", block)
+                    printf "# %s", block
+                } else if (in_block) {
+                    printf "%s", block
+                }
+            }
+            ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+            sources_disabled=true
+            log_message "INFO" "Disabled enterprise PVE repository in $file"
+        fi
+    done
+    
+    if $sources_disabled; then
+        msg_ok "Disabled enterprise repositories"
+    fi
+}
+
 # Configure repositories for Proxmox VE 9.x (deb822 format)
 configure_pve9_repositories() {
     msg_info "Configuring Proxmox VE 9.x repositories (deb822 format)"
+    
+    # First, disable any existing enterprise repositories
+    disable_enterprise_repositories
     
     # Check and handle legacy sources
     check_and_disable_legacy_sources() {
@@ -342,16 +423,16 @@ EOF
         msg_ok "Configured Debian Trixie sources (deb822)"
     fi
     
-    # Handle PVE enterprise repository
+    # Handle remaining PVE enterprise repositories (fallback)
     if component_exists_in_sources "pve-enterprise"; then
-        if whiptail --yesno "PVE enterprise repository exists. Disable it?" 8 60; then
+        if whiptail --yesno "PVE enterprise repository still exists. Disable it?" 8 60; then
             for file in /etc/apt/sources.list.d/*.sources; do
                 if grep -q "Components:.*pve-enterprise" "$file" 2>/dev/null; then
                     backup_file "$file"
                     sed -i '/^\s*Types:/,/^$/s/^\([^#].*\)$/# \1/' "$file"
                 fi
             done
-            msg_ok "Disabled PVE enterprise repository"
+            msg_ok "Disabled remaining PVE enterprise repository"
         fi
     fi
     
@@ -371,8 +452,8 @@ EOF
         msg_ok "PVE no-subscription repository already exists"
     fi
     
-    # Add Ceph repository
-    if ! component_exists_in_sources "no-subscription" && whiptail --yesno "Add Ceph package repository?" 8 60; then
+    # Add Ceph no-subscription repository (only if not already present)
+    if ! component_exists_in_sources "no-subscription" && whiptail --yesno "Add Ceph package repository (no-subscription)?" 8 60; then
         cat > /etc/apt/sources.list.d/ceph.sources << 'EOF'
 Types: deb
 URIs: http://download.proxmox.com/debian/ceph-squid
@@ -380,7 +461,7 @@ Suites: trixie
 Components: no-subscription
 Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
 EOF
-        msg_ok "Added Ceph package repository"
+        msg_ok "Added Ceph package repository (no-subscription)"
     fi
     
     # Add test repository (disabled)
