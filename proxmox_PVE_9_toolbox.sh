@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Script configuration
 readonly SCRIPT_NAME="Proxmox Post Install Script"
-readonly SCRIPT_VERSION="9.0"
+readonly SCRIPT_VERSION="9.1"
 readonly SCRIPT_AUTHOR="Bennell IT"
 readonly SCRIPT_URL="www.bennellit.com.au"
 
@@ -88,12 +88,6 @@ get_pve_major_minor() {
     local major minor
     IFS='.' read -r major minor _ <<<"$ver"
     echo "$major $minor"
-}
-
-# Check if component exists in deb822 sources
-component_exists_in_sources() {
-    local component="$1"
-    grep -h -E "^[^#]*Components:[^#]*\\b${component}\\b" /etc/apt/sources.list.d/*.sources 2>/dev/null | grep -q .
 }
 
 # Detect system type
@@ -213,136 +207,10 @@ first_run_setup() {
     msg_ok "First run setup completed"
 }
 
-# Disable enterprise repositories in deb822 sources
-disable_enterprise_repositories() {
-    local sources_disabled=false
-    
-    # Find and disable enterprise repositories
-    for file in /etc/apt/sources.list.d/*.sources; do
-        [[ ! -f "$file" ]] && continue
-        
-        if grep -q "enterprise.proxmox.com" "$file" 2>/dev/null; then
-            backup_file "$file"
-            
-            # Simple approach: comment out lines containing enterprise URLs
-            # and their associated stanza blocks
-            sed -i '
-                # Mark enterprise repository stanzas
-                /^Types:.*/{
-                    # Start of a new stanza, read ahead to check for enterprise
-                    :read_stanza
-                    N
-                    /enterprise\.proxmox\.com/!{
-                        # No enterprise found, check if stanza is complete
-                        /\n$/b print_stanza
-                        b read_stanza
-                    }
-                    # Enterprise found, comment out the entire stanza
-                    :comment_stanza
-                    s/^/# /gm
-                    # Continue reading until stanza end
-                    /\n$/b
-                    N
-                    b comment_stanza
-                    :print_stanza
-                    P
-                    D
-                }
-            ' "$file"
-            
-            # Alternative simpler approach - just comment out enterprise lines
-            sed -i '/enterprise\.proxmox\.com/s/^/# /' "$file"
-            
-            sources_disabled=true
-            log_message "INFO" "Disabled enterprise repositories in $file"
-        fi
-    done
-    
-    # If sed approach fails, use a more robust Python-like approach with awk
-    if $sources_disabled; then
-        for file in /etc/apt/sources.list.d/*.sources; do
-            [[ ! -f "$file" ]] && continue
-            
-            if grep -q "^# .*enterprise.proxmox.com" "$file" 2>/dev/null; then
-                # File was already processed, verify it's valid
-                if ! apt-get update -qq --dry-run 2>&1 | grep -q "Malformed"; then
-                    continue
-                fi
-                
-                # If malformed, restore from backup and try different approach
-                if [[ -f "${file}.backup.${TIMESTAMP}" ]]; then
-                    cp "${file}.backup.${TIMESTAMP}" "$file"
-                    log_message "INFO" "Restored $file from backup due to malformed format"
-                fi
-                
-                # Remove enterprise stanzas entirely instead of commenting
-                awk '
-                BEGIN { in_enterprise_block = 0; block = "" }
-                /^Types:/ {
-                    if (block != "" && !in_enterprise_block) {
-                        printf "%s", block
-                    }
-                    block = $0 "\n"
-                    in_enterprise_block = 0
-                    next
-                }
-                /^$/ {
-                    if (block != "" && !in_enterprise_block) {
-                        printf "%s", block
-                        print ""
-                    }
-                    block = ""
-                    next
-                }
-                {
-                    if (/enterprise\.proxmox\.com/) {
-                        in_enterprise_block = 1
-                    }
-                    block = block $0 "\n"
-                }
-                END {
-                    if (block != "" && !in_enterprise_block) {
-                        printf "%s", block
-                    }
-                }
-                ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-                
-                log_message "INFO" "Removed malformed enterprise repository stanzas from $file"
-            fi
-        done
-        
-        msg_ok "Disabled enterprise repositories"
-    fi
-}
-
-# Configure repositories for Proxmox VE 9.x (deb822 format)
+# Configure repositories for Proxmox VE 9.x (deb822 format) - Clean Reset Only
 configure_pve9_repositories() {
     msg_info "Configuring Proxmox VE 9.x repositories (deb822 format)"
     
-    # Show configuration options
-    local choice
-    choice=$(whiptail --title "Repository Configuration Method" \
-        --menu "Choose how to configure repositories:" 16 70 3 \
-        "clean" "Clean reset - Remove all and create fresh (Recommended)" \
-        "update" "Update existing - Preserve custom repositories" \
-        "cancel" "Cancel repository configuration" 3>&2 2>&1 1>&3)
-    
-    case "$choice" in
-        clean)
-            configure_clean_reset_repositories
-            ;;
-        update)
-            configure_update_existing_repositories
-            ;;
-        cancel|"")
-            msg_ok "Repository configuration cancelled"
-            return 0
-            ;;
-    esac
-}
-
-# Clean reset approach - completely fresh setup
-configure_clean_reset_repositories() {
     # Show warning about clean reset
     if ! whiptail --yesno \
 "CLEAN REPOSITORY RESET
@@ -353,10 +221,10 @@ This will:
 • Create clean deb822 format repositories
 • Configure standard PVE 9 setup
 
-This ensures a clean, consistent configuration.
+This ensures a clean, consistent configuration and is the recommended approach for Proxmox VE 9.
 
-Continue with clean reset?" 16 60; then
-        msg_ok "Clean reset cancelled"
+Continue with repository configuration?" 16 60; then
+        msg_ok "Repository configuration cancelled"
         return 0
     fi
     
@@ -467,145 +335,6 @@ $backup_dir
 
 TO ENABLE DISABLED REPOSITORIES:
 Edit the .sources files and change 'Enabled: no' to 'Enabled: yes'" 20 75
-}
-
-# Update existing approach - preserve custom repositories
-configure_update_existing_repositories() {
-    msg_info "Updating existing repository configuration"
-    
-    # First, disable any existing enterprise repositories
-    disable_enterprise_repositories
-    
-    # Check and handle legacy sources
-    check_and_disable_legacy_sources() {
-        local legacy_count=0
-        local listfile="/etc/apt/sources.list"
-        local list_files
-        
-        # Check sources.list
-        if [[ -f "$listfile" ]] && grep -qE '^\s*deb ' "$listfile"; then
-            ((legacy_count++))
-        fi
-        
-        # Check .list files
-        list_files=$(find /etc/apt/sources.list.d/ -type f -name "*.list" 2>/dev/null || true)
-        if [[ -n "$list_files" ]]; then
-            legacy_count=$((legacy_count + $(echo "$list_files" | wc -l)))
-        fi
-        
-        if ((legacy_count > 0)); then
-            local msg="Legacy APT sources found:\n"
-            [[ -f "$listfile" ]] && msg+=" - /etc/apt/sources.list\n"
-            [[ -n "$list_files" ]] && msg+="$(echo "$list_files" | sed 's|^| - |')\n"
-            msg+="\nDisable legacy sources and use deb822 format?"
-            
-            if whiptail --yesno "$msg" 15 80; then
-                # Backup and disable sources.list
-                if [[ -f "$listfile" ]] && grep -qE '^\s*deb ' "$listfile"; then
-                    backup_file "$listfile"
-                    sed -i '/^\s*deb /s/^/# Disabled by Proxmox Helper Script /' "$listfile"
-                    msg_ok "Disabled entries in sources.list"
-                fi
-                # Rename all .list files to .list.bak
-                if [[ -n "$list_files" ]]; then
-                    while IFS= read -r f; do
-                        [[ -f "$f" ]] && mv "$f" "$f.bak"
-                    done <<<"$list_files"
-                    msg_ok "Renamed legacy .list files to .bak"
-                fi
-            fi
-        fi
-    }
-    
-    # Check if deb822 sources exist
-    if ! find /etc/apt/sources.list.d/ -maxdepth 1 -name '*.sources' | grep -q .; then
-        check_and_disable_legacy_sources
-    fi
-    
-    # Configure main Debian sources (deb822)
-    if whiptail --yesno "Configure/update Debian Trixie sources (deb822 format)?" 8 70; then
-        cat > /etc/apt/sources.list.d/debian.sources <<'EOF'
-Enabled: yes
-Types: deb
-URIs: http://deb.debian.org/debian/
-Suites: trixie
-Components: main contrib non-free non-free-firmware
-Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
-
-Enabled: yes
-Types: deb
-URIs: http://deb.debian.org/debian/
-Suites: trixie-updates
-Components: main contrib non-free non-free-firmware
-Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
-
-Enabled: yes
-Types: deb
-URIs: http://security.debian.org/debian-security/
-Suites: trixie-security
-Components: main contrib non-free non-free-firmware
-Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
-EOF
-        msg_ok "Configured Debian Trixie sources (deb822)"
-    fi
-    
-    # Handle remaining PVE enterprise repositories (fallback)
-    if component_exists_in_sources "pve-enterprise"; then
-        if whiptail --yesno "PVE enterprise repository still exists. Disable it?" 8 60; then
-            for file in /etc/apt/sources.list.d/*.sources; do
-                if grep -q "Components:.*pve-enterprise" "$file" 2>/dev/null; then
-                    backup_file "$file"
-                    sed -i '/^\s*Types:/,/^$/s/^\([^#].*\)$/# \1/' "$file"
-                fi
-            done
-            msg_ok "Disabled remaining PVE enterprise repository"
-        fi
-    fi
-    
-    # Add PVE no-subscription repository
-    if ! component_exists_in_sources "pve-no-subscription"; then
-        if whiptail --yesno "Add PVE no-subscription repository?" 8 60; then
-            cat > /etc/apt/sources.list.d/proxmox.sources <<'EOF'
-Enabled: yes
-Types: deb
-URIs: http://download.proxmox.com/debian/pve
-Suites: trixie
-Components: pve-no-subscription
-Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
-EOF
-            msg_ok "Added PVE no-subscription repository"
-        fi
-    else
-        msg_ok "PVE no-subscription repository already exists"
-    fi
-    
-    # Add Ceph no-subscription repository (only if not already present)
-    if ! component_exists_in_sources "no-subscription" && whiptail --yesno "Add Ceph package repository (disabled by default)?" 8 70; then
-        cat > /etc/apt/sources.list.d/ceph.sources <<'EOF'
-Enabled: no
-Types: deb
-URIs: http://download.proxmox.com/debian/ceph-squid
-Suites: trixie
-Components: no-subscription
-Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
-EOF
-        msg_ok "Added Ceph package repository (disabled)"
-    fi
-    
-    # Add test repository (disabled)
-    if ! component_exists_in_sources "pve-test" && whiptail --yesno "Add PVE test repository (disabled)?" 8 60; then
-        cat > /etc/apt/sources.list.d/pve-test.sources <<'EOF'
-Enabled: no
-Types: deb
-URIs: http://download.proxmox.com/debian/pve
-Suites: trixie
-Components: pve-test
-Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
-EOF
-        msg_ok "Added PVE test repository (disabled)"
-    fi
-    
-    msg_ok "Repository update completed"
 }
 
 # System update
@@ -793,9 +522,14 @@ Test Repository:
 • Only for advanced users/testing
 • Should remain DISABLED unless needed
 
+This script uses CLEAN RESET method:
+• Backs up all existing repositories
+• Creates fresh deb822 format configuration
+• Ensures compatibility with Proxmox VE 9
+
 WARNING: After repository changes, you MUST:
 1. Clear your browser cache (Ctrl+Shift+R)
-2. Reboot the system for full effect" 20 75
+2. Reboot the system for full effect" 22 75
             ;;
         subscription_bypass)
             whiptail --title "Subscription Bypass Warning" --msgbox \
