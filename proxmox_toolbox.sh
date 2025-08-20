@@ -272,76 +272,100 @@ EOF
 disable_enterprise_repositories() {
     local sources_disabled=false
     
-    # Find and disable Ceph enterprise repositories
+    # Find and disable enterprise repositories
     for file in /etc/apt/sources.list.d/*.sources; do
         [[ ! -f "$file" ]] && continue
         
-        if grep -q "enterprise.proxmox.com/debian/ceph" "$file" 2>/dev/null; then
+        if grep -q "enterprise.proxmox.com" "$file" 2>/dev/null; then
             backup_file "$file"
-            # Comment out entire repository blocks containing enterprise Ceph repos
-            awk '
-            /^Types:/ { in_block = 1; block = $0 "\n"; next }
-            in_block && /^$/ { 
-                if (block ~ /enterprise\.proxmox\.com\/debian\/ceph/) {
-                    gsub(/^/, "# ", block)
-                    print "# " block
-                } else {
-                    printf "%s", block
+            
+            # Simple approach: comment out lines containing enterprise URLs
+            # and their associated stanza blocks
+            sed -i '
+                # Mark enterprise repository stanzas
+                /^Types:.*/{
+                    # Start of a new stanza, read ahead to check for enterprise
+                    :read_stanza
+                    N
+                    /enterprise\.proxmox\.com/!{
+                        # No enterprise found, check if stanza is complete
+                        /\n$/b print_stanza
+                        b read_stanza
+                    }
+                    # Enterprise found, comment out the entire stanza
+                    :comment_stanza
+                    s/^/# /gm
+                    # Continue reading until stanza end
+                    /\n$/b
+                    N
+                    b comment_stanza
+                    :print_stanza
+                    P
+                    D
                 }
-                print ""
-                in_block = 0
-                block = ""
-                next
-            }
-            in_block { block = block $0 "\n"; next }
-            { print }
-            END {
-                if (in_block && block ~ /enterprise\.proxmox\.com\/debian\/ceph/) {
-                    gsub(/^/, "# ", block)
-                    printf "# %s", block
-                } else if (in_block) {
-                    printf "%s", block
-                }
-            }
-            ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+            ' "$file"
+            
+            # Alternative simpler approach - just comment out enterprise lines
+            sed -i '/enterprise\.proxmox\.com/s/^/# /' "$file"
+            
             sources_disabled=true
-            log_message "INFO" "Disabled enterprise Ceph repository in $file"
-        fi
-        
-        # Also handle PVE enterprise repositories
-        if grep -q "enterprise.proxmox.com/debian/pve" "$file" 2>/dev/null; then
-            backup_file "$file"
-            awk '
-            /^Types:/ { in_block = 1; block = $0 "\n"; next }
-            in_block && /^$/ { 
-                if (block ~ /enterprise\.proxmox\.com\/debian\/pve/) {
-                    gsub(/^/, "# ", block)
-                    print "# " block
-                } else {
-                    printf "%s", block
-                }
-                print ""
-                in_block = 0
-                block = ""
-                next
-            }
-            in_block { block = block $0 "\n"; next }
-            { print }
-            END {
-                if (in_block && block ~ /enterprise\.proxmox\.com\/debian\/pve/) {
-                    gsub(/^/, "# ", block)
-                    printf "# %s", block
-                } else if (in_block) {
-                    printf "%s", block
-                }
-            }
-            ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-            sources_disabled=true
-            log_message "INFO" "Disabled enterprise PVE repository in $file"
+            log_message "INFO" "Disabled enterprise repositories in $file"
         fi
     done
     
+    # If sed approach fails, use a more robust Python-like approach with awk
     if $sources_disabled; then
+        for file in /etc/apt/sources.list.d/*.sources; do
+            [[ ! -f "$file" ]] && continue
+            
+            if grep -q "^# .*enterprise.proxmox.com" "$file" 2>/dev/null; then
+                # File was already processed, verify it's valid
+                if ! apt-get update -qq --dry-run 2>&1 | grep -q "Malformed"; then
+                    continue
+                fi
+                
+                # If malformed, restore from backup and try different approach
+                if [[ -f "${file}.backup.${TIMESTAMP}" ]]; then
+                    cp "${file}.backup.${TIMESTAMP}" "$file"
+                    log_message "INFO" "Restored $file from backup due to malformed format"
+                fi
+                
+                # Remove enterprise stanzas entirely instead of commenting
+                awk '
+                BEGIN { in_enterprise_block = 0; block = "" }
+                /^Types:/ {
+                    if (block != "" && !in_enterprise_block) {
+                        printf "%s", block
+                    }
+                    block = $0 "\n"
+                    in_enterprise_block = 0
+                    next
+                }
+                /^$/ {
+                    if (block != "" && !in_enterprise_block) {
+                        printf "%s", block
+                        print ""
+                    }
+                    block = ""
+                    next
+                }
+                {
+                    if (/enterprise\.proxmox\.com/) {
+                        in_enterprise_block = 1
+                    }
+                    block = block $0 "\n"
+                }
+                END {
+                    if (block != "" && !in_enterprise_block) {
+                        printf "%s", block
+                    }
+                }
+                ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+                
+                log_message "INFO" "Removed malformed enterprise repository stanzas from $file"
+            fi
+        done
+        
         msg_ok "Disabled enterprise repositories"
     fi
 }
