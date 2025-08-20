@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Script configuration
 readonly SCRIPT_NAME="Proxmox Post Install Script"
-readonly SCRIPT_VERSION="3.0"
+readonly SCRIPT_VERSION="9.0"
 readonly SCRIPT_AUTHOR="Bennell IT"
 readonly SCRIPT_URL="www.bennellit.com.au"
 
