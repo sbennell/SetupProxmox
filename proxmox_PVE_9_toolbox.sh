@@ -111,8 +111,9 @@ if ($localip) {
 ****************************************************************************** 
 __EOBANNER
 
-    $banner .= "                         Welcome to $hostname\n";
-    $banner .= "                  Web Management: https://$localip:8006/\n";
+    $banner .= "                         Welcome to $hostname Server\n";
+    $banner .= "             Please use your web browser to configure this server\n";
+    $banner .= "                    connect to https://$localip:8006/\n";
     $banner .= "$xline\n";
     $banner .= "  SYSTEM INFORMATION:\n";
     $banner .= "  OS:       $hw->{os_info}\n";
