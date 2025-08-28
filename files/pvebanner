@@ -1,23 +1,89 @@
 #!/usr/bin/perl
-
 use strict;
 use PVE::INotify;
 use PVE::Cluster;
 use Sys::Hostname;
+use POSIX qw(ceil);
 
 my $nodename = PVE::INotify::nodename();
 my $localip = PVE::Cluster::remote_node_ip($nodename, 1);
-#my $lastupdate = `date +%m/%d/%Y" "%l:%M:%S" "%p`;
 my $year = `date +%Y`;
+chomp($year);
 my $hostname = hostname;
 my $xline = '*' x 78;
 
-my $banner = '';
+# Hardware Information Collection
+sub get_hardware_info {
+    my %hw_info;
+    
+    # CPU Information
+    my $cpu_info = `lscpu | grep "Model name" | head -1`;
+    chomp($cpu_info);
+    $cpu_info =~ s/Model name:\s*//;
+    my $cpu_cores = `nproc`;
+    chomp($cpu_cores);
+    my $cpu_threads = `lscpu | grep "^CPU(s):" | awk '{print \$2}'`;
+    chomp($cpu_threads);
+    
+    # Memory Information
+    my $mem_total = `grep MemTotal /proc/meminfo | awk '{print \$2}'`;
+    chomp($mem_total);
+    $mem_total = sprintf("%.1f", $mem_total / 1024 / 1024); # Convert to GB
+    
+    # Storage Information - disk count only
+    my $disk_count = `lsblk -d -o NAME | grep -E '^(sd|nvme|vd)' | wc -l`;
+    chomp($disk_count);
+    
+    # Network Interface Information
+    my $primary_iface = `ip route | grep default | awk '{print \$5}' | head -1`;
+    chomp($primary_iface);
+    my $mac_addr = `cat /sys/class/net/$primary_iface/address 2>/dev/null`;
+    chomp($mac_addr);
+    
 
+    
+    # Temperature (if available)
+    my $temp = "";
+    if (-e "/sys/class/thermal/thermal_zone0/temp") {
+        my $temp_raw = `cat /sys/class/thermal/thermal_zone0/temp 2>/dev/null`;
+        chomp($temp_raw);
+        if ($temp_raw && $temp_raw =~ /^\d+$/) {
+            $temp = sprintf("%.1f°C", $temp_raw / 1000);
+        }
+    }
+    
+    # Disk count
+    my $disk_count = `lsblk -d -o NAME | grep -E '^(sd|nvme|vd)' | wc -l`;
+    chomp($disk_count);
+    
+    # BIOS/UEFI and System info
+    my $system_vendor = `dmidecode -s system-manufacturer 2>/dev/null | head -1`;
+    chomp($system_vendor);
+    my $system_model = `dmidecode -s system-product-name 2>/dev/null | head -1`;
+    chomp($system_model);
+    
+    return {
+        cpu_model => $cpu_info || "Unknown CPU",
+        cpu_cores => $cpu_cores || "Unknown",
+        cpu_threads => $cpu_threads || "Unknown", 
+        memory => $mem_total || "Unknown",
+        disk_count => $disk_count || "0",
+        primary_iface => $primary_iface || "Unknown",
+        mac_addr => $mac_addr || "Unknown",
+
+        temperature => $temp,
+        disk_count => $disk_count || "0",
+        system_vendor => $system_vendor || "Unknown",
+        system_model => $system_model || "Unknown"
+    };
+}
+
+my $hw = get_hardware_info();
+
+my $banner = '';
 if ($localip) {
     $banner .= <<__EOBANNER;
 $xline
-
 888888b.                                       888 888     8888888 88888888888
 888  "88b                                      888 888       888       888
 888  .88P                                      888 888       888       888
@@ -28,18 +94,24 @@ $xline
 8888888P"   "Y8888  888  888 888  888  "Y8888  888 888     8888888     888
                               www.bennellit.com.au                        $year
 $xline
-                         Welcome to $hostname Server.                         
-             Please use your web browser to configure this server             
-                    connect to https://${localip}:8006/                    
+                         Welcome to $hostname Server
+             Please use your web browser to configure this server
+                    connect to https://${localip}:8006/
 $xline
+  SYSTEM INFORMATION:
+  Hardware: $hw->{system_vendor} $hw->{system_model}
+  CPU:      $hw->{cpu_model}
+  Cores:    $hw->{cpu_cores} cores, $hw->{cpu_threads} threads
+  Memory:   $hw->{memory} GB RAM
+  Storage:  $hw->{disk_count} disks detected
+  Network:  $hw->{primary_iface} ($hw->{mac_addr})
+  IP:       $localip
 __EOBANNER
 
+    $banner .= "$xline\n";
 }
 
 open(ISSUE, ">/etc/issue");
-
 print ISSUE $banner;
-
 close(ISSUE);
-
 exit (0);
