@@ -62,25 +62,34 @@ sub get_hardware_info {
     my $system_model = `dmidecode -s system-product-name 2>/dev/null | head -1`;
     chomp($system_model);
     
+    # Clean up generic/unhelpful hardware strings
+    if ($system_vendor =~ /^(Default string|To be filled|System manufacturer|Unknown)$/i) {
+        $system_vendor = "";
+    }
+    if ($system_model =~ /^(Default string|To be filled|System Product Name|Unknown)$/i) {
+        $system_model = "";
+    }
+    
     # Operating System info
     my $os_info = `cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2`;
     chomp($os_info);
     
-    # Get Debian version info if available
-    my $debian_info = "";
-    if (-e "/etc/debian_version") {
-        my $debian_version = `cat /etc/debian_version`;
-        chomp($debian_version);
-        if ($debian_version) {
-            # Try to get codename from os-release
-            my $codename = `cat /etc/os-release | grep VERSION_CODENAME | cut -d'=' -f2`;
-            chomp($codename);
-            if ($codename) {
-                $debian_info = " (Debian $debian_version - $codename)";
-            } else {
-                $debian_info = " (Debian $debian_version)";
-            }
+    # Get Proxmox version if available
+    my $pve_version = "";
+    if (-e "/usr/bin/pveversion") {
+        my $pve_info = `pveversion --verbose | head -1`;
+        chomp($pve_info);
+        if ($pve_info =~ /pve-manager\/(\S+)/) {
+            $pve_version = "Proxmox VE $1";
         }
+    }
+    
+    # Construct final OS string
+    my $final_os = "";
+    if ($pve_version) {
+        $final_os = "$pve_version ($os_info)";
+    } else {
+        $final_os = $os_info;
     }
     
     my $kernel_info = `uname -r`;
@@ -125,16 +134,27 @@ $xline
                     connect to https://${localip}:8006/
 $xline
   SYSTEM INFORMATION:
-  OS:       $hw->{os_info}$hw->{debian_info}
+  OS:       $hw->{os_info}
   Kernel:   $hw->{kernel_info}
-  Hardware: $hw->{system_vendor} $hw->{system_model}
+__EOBANNER
+
+    # Only show hardware line if we have meaningful info
+    if ($hw->{system_vendor} || $hw->{system_model}) {
+        my $hw_string = "";
+        $hw_string .= $hw->{system_vendor} if $hw->{system_vendor};
+        $hw_string .= " " if ($hw->{system_vendor} && $hw->{system_model});
+        $hw_string .= $hw->{system_model} if $hw->{system_model};
+        $banner .= "  Hardware: $hw_string\n";
+    }
+    
+    $banner .= <<__EOCONTINUE;
   CPU:      $hw->{cpu_model}
   Cores:    $hw->{cpu_cores} cores, $hw->{cpu_threads} threads
   Memory:   $hw->{memory} GB RAM
   Storage:  $hw->{disk_count} disks detected
   Network:  $hw->{primary_iface} ($hw->{mac_addr})
   IP:       $localip
-__EOBANNER
+__EOCONTINUE
 
     $banner .= "$xline\n";
 }
