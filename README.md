@@ -28,6 +28,10 @@ Connect to your Proxmox node via SSH and run:
 
 ```bash
 bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/proxmox_toolbox.sh)"
+
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/sbennell/SetupProxmox/master/proxmox_PVE_9_toolbox.sh)"
+
+
 ```
 
 ### Manual Download
