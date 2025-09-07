@@ -40,8 +40,6 @@ sub get_hardware_info {
     my $mac_addr = `cat /sys/class/net/$primary_iface/address 2>/dev/null`;
     chomp($mac_addr);
     
-
-    
     # Temperature (if available)
     my $temp = "";
     if (-e "/sys/class/thermal/thermal_zone0/temp") {
@@ -51,10 +49,6 @@ sub get_hardware_info {
             $temp = sprintf("%.1f°C", $temp_raw / 1000);
         }
     }
-    
-    # Disk count
-    my $disk_count = `lsblk -d -o NAME | grep -E '^(sd|nvme|vd)' | wc -l`;
-    chomp($disk_count);
     
     # BIOS/UEFI and System info
     my $system_vendor = `dmidecode -s system-manufacturer 2>/dev/null | head -1`;
@@ -103,12 +97,10 @@ sub get_hardware_info {
         disk_count => $disk_count || "0",
         primary_iface => $primary_iface || "Unknown",
         mac_addr => $mac_addr || "Unknown",
-
         temperature => $temp,
-        disk_count => $disk_count || "0",
+        system_vendor => $system_vendor || "Unknown",
         system_model => $system_model || "Unknown",
-        os_info => $os_info || "Unknown",
-        debian_info => $debian_info,
+        os_info => $final_os || "Unknown",
         kernel_info => $kernel_info || "Unknown"
     };
 }
