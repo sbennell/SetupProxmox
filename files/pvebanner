@@ -71,10 +71,10 @@ sub get_hardware_info {
     # Get Proxmox version if available
     my $pve_version = "";
     if (-e "/usr/bin/pveversion") {
-        my $pve_info = `pveversion --verbose | head -1`;
+        my $pve_info = `pveversion | cut -d'/' -f2 | cut -d'/' -f1`;
         chomp($pve_info);
-        if ($pve_info =~ /pve-manager\/(\S+)/) {
-            $pve_version = "Proxmox VE $1";
+        if ($pve_info) {
+            $pve_version = "Proxmox $pve_info";
         }
     }
     
