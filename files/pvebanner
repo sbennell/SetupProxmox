@@ -33,13 +33,7 @@ sub get_hardware_info {
     # Storage Information - disk count only
     my $disk_count = `lsblk -d -o NAME | grep -E '^(sd|nvme|vd)' | wc -l`;
     chomp($disk_count);
-    
-    # Network Interface Information
-    my $primary_iface = `ip route | grep default | awk '{print \$5}' | head -1`;
-    chomp($primary_iface);
-    my $mac_addr = `cat /sys/class/net/$primary_iface/address 2>/dev/null`;
-    chomp($mac_addr);
-    
+        
     # Temperature (if available)
     my $temp = "";
     if (-e "/sys/class/thermal/thermal_zone0/temp") {
@@ -95,8 +89,6 @@ sub get_hardware_info {
         cpu_threads => $cpu_threads || "Unknown", 
         memory => $mem_total || "Unknown",
         disk_count => $disk_count || "0",
-        primary_iface => $primary_iface || "Unknown",
-        mac_addr => $mac_addr || "Unknown",
         temperature => $temp,
         system_vendor => $system_vendor || "Unknown",
         system_model => $system_model || "Unknown",
@@ -144,7 +136,6 @@ __EOBANNER
   Cores:    $hw->{cpu_cores} cores, $hw->{cpu_threads} threads
   Memory:   $hw->{memory} GB RAM
   Storage:  $hw->{disk_count} disks detected
-  Network:  $hw->{primary_iface} ($hw->{mac_addr})
   IP:       $localip
 __EOCONTINUE
 
